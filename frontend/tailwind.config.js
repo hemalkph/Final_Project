@@ -11,6 +11,7 @@ export default {
         "./admin-dashboard.html",
         "./sell-property.html",
         "./aboutDev.html",
+        "./contact.html",
         "./src/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {

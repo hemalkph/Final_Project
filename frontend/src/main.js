@@ -210,7 +210,7 @@ export const setupNavbar = () => {
                         <a href="/sell-property.html" class="nav-pill ${getActiveClass('/sell-property')}">Sell Property</a>
                         <a href="/agents.html" class="nav-pill ${getActiveClass('/agents')}">Agents</a>
                         <a href="/about.html" class="nav-pill ${getActiveClass('/about')}">About Us</a>
-                        <a href="#contact" class="nav-pill ${getActiveClass('/contact')}">Contact</a>
+                        <a href="/contact.html" class="nav-pill ${getActiveClass('/contact')}">Contact</a>
                         ${isAuth ? `<a href="/user-dashboard.html" class="nav-pill ${getActiveClass('/user-dashboard.html')}">Dashboard</a>` : ''}
                     </div>
                     

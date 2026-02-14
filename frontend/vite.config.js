@@ -14,6 +14,7 @@ export default defineConfig({
                 view_property: resolve(__dirname, 'view-property.html'),
                 admin_dashboard: resolve(__dirname, 'admin-dashboard.html'),
                 user_dashboard: resolve(__dirname, 'user-dashboard.html'),
+                contact: resolve(__dirname, 'contact.html'),
             },
         },
     },
