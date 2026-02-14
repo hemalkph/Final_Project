@@ -387,8 +387,6 @@
                 `;
             }
         }
-
-        // Load agents
         async function loadAgents() {
             try {
                 const response = await fetch(`${API_URL}/agents`, {
@@ -447,7 +445,7 @@
             }
         }
 
-        // Close inquiry
+        
         async function closeInquiry(inquiryId) {
             if (!confirm('Are you sure you want to close this inquiry?')) return;
 
@@ -466,7 +464,7 @@
             }
         }
 
-        // Initialize
+        
         document.addEventListener('DOMContentLoaded', () => {
             loadInquiries();
             loadAgents();
