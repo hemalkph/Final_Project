@@ -2789,7 +2789,7 @@
                         assignedAgent: formData.get('assignedAgentId') ? { id: parseInt(formData.get('assignedAgentId')) } : null
                     };
 
-                    // Send to API
+                    
                     const response = await fetch(`${API_BASE}/api/properties`, {
                         method: 'POST',
                         headers: getAuthHeaders(),
@@ -3647,7 +3647,7 @@
                 ? new Date(property.createdAt).toLocaleDateString('en-US', { dateStyle: 'long' })
                 : 'N/A';
 
-            // Images
+            
             const imagesSection = document.getElementById('viewPropertyImages');
             const mainImgEl = document.getElementById('viewPropertyMainImg');
             const thumbnailsEl = document.getElementById('viewPropertyThumbnails');
@@ -3692,7 +3692,7 @@
                     thumbnailsEl.innerHTML = '';
                 }
             } else {
-                // No images - show placeholder
+                
                 mainImgEl.src = 'https://placehold.co/600x400/e5e7eb/9ca3af?text=No+Images+Uploaded';
                 thumbnailsEl.innerHTML = '';
             }
