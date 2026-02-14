@@ -200,7 +200,7 @@ export const setupNavbar = () => {
                 <div class="flex justify-between items-center">
                     <!-- Logo -->
                     <a href="/" class="nav-logo">
-                        RealEstate
+                        Monolith Realty
                     </a>
                     
                     <!-- Navigation Pills -->
@@ -309,7 +309,7 @@ export const setupFooter = () => {
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
                     <div class="space-y-4">
                         <div class="text-2xl font-bold text-primary">
-                            RealEstate
+                            Monolith Realty
                         </div>
                         <p class="text-gray-400 text-sm leading-relaxed">
                             Transforming the way you find your dream home. Premium properties, trusted agents, and seamless experiences.
@@ -322,16 +322,19 @@ export const setupFooter = () => {
                             <li><a href="/" class="hover:text-primary transition-colors">Home</a></li>
                             <li><a href="/properties.html" class="hover:text-primary transition-colors">Properties</a></li>
                             <li><a href="/login.html" class="hover:text-primary transition-colors">Login</a></li>
-                            <li><a href="/register.html" class="hover:text-primary transition-colors">Register</a></li>
+                            <li><a href="/contact.html" class="hover:text-primary transition-colors">Contact Us</a></li>
+                            <li><a href="/agents.html" class="hover:text-primary transition-colors">View Agents</a></li>
+                            <li><a href="/about.html" class="hover:text-primary transition-colors">About Us</a></li>
+                            <li><a href="/aboutDev.html" class="hover:text-primary transition-colors">Dev Team</a></li>
                         </ul>
                     </div>
 
                     <div>
                         <h3 class="text-lg font-semibold mb-4 text-white">Contact</h3>
                         <ul class="space-y-2 text-gray-400 text-sm">
-                            <li class="flex items-center"><span class="mr-2">📍</span> 123 Innovation Dr, Tech City</li>
-                            <li class="flex items-center"><span class="mr-2">📧</span> support@realestate.com</li>
-                            <li class="flex items-center"><span class="mr-2">📞</span> +1 (555) 123-4567</li>
+                            <li class="flex items-center"><span class="mr-2">📍</span> NO: 30/12 Innovation Dr, Tech City, Kollupitiya.</li>
+                            <li class="flex items-center"><span class="mr-2">📧</span> managementsystemr@gmail.com</li>
+                            <li class="flex items-center"><span class="mr-2">📞</span> +94 75 261 9155</li>
                         </ul>
                     </div>
 
@@ -351,7 +354,7 @@ export const setupFooter = () => {
                     </div>
                 </div>
                 <div class="border-t border-dark-border pt-8 text-center text-gray-500 text-sm">
-                    &copy; ${new Date().getFullYear()} Real Estate Inc. All rights reserved.
+                    &copy; ${new Date().getFullYear()} Monolith Realty Inc. All rights reserved.
                 </div>
             </div>
     `;
