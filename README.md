@@ -30,14 +30,14 @@ A full-stack **Real Estate Property Management** web application built with **Sp
 | **Language**            | Java                              | 17        |
 | **Build Tool**          | Apache Maven                      | 3.x       |
 | **ORM**                 | Spring Data JPA / Hibernate       | Latest    |
-| **Database**            | MySQL (MariaDB compatible)        | 10.4+     |
+| **Database**            | PostgreSQL via Supabase           | 17        |
 | **Security**            | Spring Security + JWT (jjwt)      | 0.12.6    |
 | **WebSocket**           | Spring WebSocket (STOMP)          | Latest    |
 | **Email**               | Spring Boot Starter Mail (SMTP)   | Latest    |
 | **Validation**          | Spring Boot Starter Validation    | Latest    |
 | **Monitoring**          | Spring Boot Actuator              | Latest    |
 | **Code Generation**     | Lombok                            | Latest    |
-| **Environment Config**  | spring-dotenv                     | 4.0.0     |
+| **Environment Config**  | Spring Boot native `.env` import  | —         |
 | **DevTools**            | Spring Boot DevTools              | Latest    |
 | **Testing**             | JUnit 5, H2 (in-memory DB)       | Latest    |
 
@@ -149,7 +149,6 @@ DEA-Final/
 │   ├── tailwind.config.js                      # TailwindCSS configuration
 │   └── postcss.config.js                       # PostCSS plugins
 │
-├── real_estate_db.sql                      # Full database dump (importable)
 ├── pom.xml                                 # Maven build configuration
 ├── mvnw / mvnw.cmd                         # Maven wrapper scripts
 └── .gitignore
@@ -165,7 +164,7 @@ Make sure the following are installed on your system before running the project:
 |---------------------|-----------|-------------------------------------------------------------------------------|
 | **Java JDK**        | 17+       | [Oracle JDK 17](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) or [Adoptium](https://adoptium.net/) |
 | **IntelliJ IDEA**   | 2023.x+   | [JetBrains IntelliJ](https://www.jetbrains.com/idea/download/)                |
-| **MySQL Server**    | 8.0+      | [MySQL Downloads](https://dev.mysql.com/downloads/mysql/) or use [XAMPP](https://www.apachefriends.org/) (MariaDB) |
+| **Supabase account**| Free tier | [supabase.com](https://supabase.com/) — hosts the Postgres database, no local DB install needed |
 | **Node.js**         | 18+       | [Node.js Downloads](https://nodejs.org/)                                      |
 | **npm**             | 9+        | Bundled with Node.js                                                          |
 | **Git**             | Latest    | [Git Downloads](https://git-scm.com/downloads)                               |
@@ -174,36 +173,31 @@ Make sure the following are installed on your system before running the project:
 
 ## 🗄 Database Setup
 
-### Option A — Import the provided SQL dump (Recommended)
+The database is a hosted **Supabase Postgres** instance — no local database server to install or run.
 
-1. Start your **MySQL/MariaDB** server (via XAMPP, MySQL Workbench, or CLI).
+### Option A — Use the shared team project (Recommended for teammates)
 
-2. Create the database and import the dump:
+Ask the project owner for the shared Supabase project's connection details (session-pooler URL, DB user, DB password) and skip to [Environment Variables](#-environment-variables) below to add them to your own `.env`. Everyone on the team points at the same database, so schema and seed data are already there.
 
-   ```bash
-   mysql -u root -p < real_estate_db.sql
-   ```
+### Option B — Create your own Supabase project
 
-   Or via **phpMyAdmin**:
-   - Navigate to `http://localhost/phpmyadmin`
-   - Create a new database named **`real_estate_db`**
-   - Go to the **Import** tab → Choose `real_estate_db.sql` → Click **Go**
-
-### Option B — Let Hibernate auto-create tables
-
-If you skip the SQL import, Spring Boot will auto-create all tables on first run (since `spring.jpa.hibernate.ddl-auto=update` is configured). However, you won't have any sample data.
+1. Create a free project at [supabase.com](https://supabase.com/).
+2. In your project's **Settings → Database → Connection string**, select the **Session pooler** tab (not Direct — Direct is IPv6-only and usually fails outside cloud networks; not Transaction pooler either, since it needs extra JDBC flags). Copy the connection details.
+3. Add them to your `.env` (see [Environment Variables](#-environment-variables)).
+4. Tables are created automatically on first run — `spring.jpa.hibernate.ddl-auto=update` builds the schema from the JPA entities, and `DataInitializer`/`DataSeeder` insert the default accounts (see [Default Accounts](#-default-accounts)). You won't have the shared team's live property/agent data this way, only the seeded defaults.
 
 ### Database Configuration
 
-The default config in `src/main/resources/application.properties`:
+`src/main/resources/application.properties` reads the connection from environment variables — nothing to hardcode:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/real_estate_db?createDatabaseIfNotExist=true
-spring.datasource.username=root
-spring.datasource.password=
+spring.datasource.url=${SUPABASE_DB_URL}
+spring.datasource.username=${SUPABASE_DB_USER}
+spring.datasource.password=${SUPABASE_DB_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
 ```
 
-> **Note:** Update the `username` and `password` if your MySQL server uses different credentials.
+These come from your `.env` file at the project root — see [Environment Variables](#-environment-variables).
 
 ---
 
@@ -258,11 +252,9 @@ spring.datasource.password=
    - Set **JRE** to **17**
    - Click **Apply → OK**
 
-### Step 7 — Start MySQL
+### Step 7 — Create your `.env` file
 
-Make sure your MySQL/MariaDB server is **running** before starting the app:
-- **XAMPP:** Start the MySQL module from the Control Panel
-- **MySQL Service:** Ensure the `mysql` / `MySQL80` Windows service is running
+Before running, make sure `.env` exists at the project root with your Supabase credentials — see [Environment Variables](#-environment-variables). Nothing to start locally; the database is hosted on Supabase.
 
 ### Step 8 — Run the Application
 
@@ -313,9 +305,22 @@ The frontend makes API calls to the backend at `localhost:8080`. CORS is configu
 
 ## 🔐 Environment Variables
 
-For **email functionality** (seller activation emails, notifications), create a `.env` file in the project root:
+Create a `.env` file in the project root (`Final_Project/.env`, alongside `pom.xml`) — it's git-ignored, so each developer keeps their own copy and it's never committed:
 
 ```env
+# Supabase Postgres — get these from a teammate or your own Supabase project's
+# Settings → Database → Connection string → Session pooler tab
+SUPABASE_DB_URL=jdbc:postgresql://<pooler-host>:5432/postgres
+SUPABASE_DB_USER=postgres.<project-ref>
+SUPABASE_DB_PASSWORD=<your-db-password>
+
+# JWT signing secret — any long random string, generate your own with:
+#   openssl rand -base64 64
+# Must be the same value for everyone sharing one Supabase database, otherwise
+# tokens issued by one backend instance won't validate against another.
+JWT_SECRET=<random-secret>
+
+# Mail (optional — only needed for seller activation emails; app runs fine without it)
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=email@gmail.com
@@ -326,7 +331,7 @@ APP_BASE_URL=http://localhost:5173
 
 > **Tip:** For Gmail, generate an [App Password](https://myaccount.google.com/apppasswords) instead of using your regular password.
 
-The `.env` file is loaded automatically by the `spring-dotenv` library.
+The `.env` file is loaded automatically via Spring Boot's native `spring.config.import` mechanism (configured in `application.properties`) — no extra library involved.
 
 ---
 
@@ -366,7 +371,7 @@ The `.env` file is loaded automatically by the `spring-dotenv` library.
 └──────────────────────────┼──────────────────────────────────┘
                            │
 ┌──────────────────────────┼──────────────────────────────────┐
-│                     MySQL Database                          │
+│              PostgreSQL Database (Supabase)                 │
 │   users │ agents │ properties │ inquiries │ messages │ ...  │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -418,15 +423,15 @@ The `.env` file is loaded automatically by the `spring-dotenv` library.
 
 ## 👤 Default Accounts
 
-After importing `real_estate_db.sql`, you can log in with these accounts:
+`DataInitializer` and `DataSeeder` create these accounts automatically on first backend startup:
 
-| Role    | Email                        | Password   |
-|---------|------------------------------|------------|
-| Admin   | `admin@example.com`          | `admin123` |
-| User    | `user@example.com`           | `user123`  |
-| Agent   | `hemalag@re.com`             | `hemal123` |
+| Role    | Email                        | Password    |
+|---------|------------------------------|-------------|
+| Admin   | `admin@example.com`          | `password`  |
+| User    | `user@example.com`           | `password`  |
+| Agent   | `hemalag@re.com`              | `hemal1234` |
 
-> **Note:** All agent accounts use the password `<agentname>123`.
+> **Note:** All 9 seeded agent accounts follow the pattern `<name>ag@re.com` / `<name>1234` (e.g. `ishanag@re.com` / `ishan1234`, `chanukaag@re.com` / `chanuka1234`). See `DataSeeder.java` for the full list.
 
 ---
 
