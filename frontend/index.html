@@ -20,6 +20,7 @@
         <video autoplay muted loop playsinline poster="images/background.jpg" id="heroBg"
             class="absolute inset-0 w-full h-full object-cover will-change-transform z-0">
             <source src="images/house.webm" type="video/webm">
+            <track kind="captions" src="images/house-captions.vtt" srclang="en" label="No spoken audio">
             <!-- Fallback for older browsers -->
             <img src="images/background.jpg" alt="Hero Background" class="absolute inset-0 w-full h-full object-cover">
         </video>
@@ -618,7 +619,6 @@
                     agentsGrid.innerHTML = topAgents.map((agent, index) => {
                         const imageUrl = agent.profileImageUrl ||
                             `https://ui-avatars.com/api/?name=${encodeURIComponent(agent.name)}&size=400&background=11d661&color=fff`;
-                        const rating = agent.rating ? agent.rating.toFixed(1) : '5.0';
                         const stars = '★'.repeat(Math.round(agent.rating || 5)) + '☆'.repeat(5 - Math.round(agent.rating || 5));
                         const specialization = agent.specialization || agent.title || 'Real Estate Specialist';
                         const isTopAgent = index === 0;

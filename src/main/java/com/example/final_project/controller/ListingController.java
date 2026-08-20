@@ -16,7 +16,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/listings")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ListingController {
 
     private final PropertyService propertyService;

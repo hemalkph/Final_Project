@@ -100,6 +100,7 @@
             <div class="flex flex-col lg:flex-row gap-4 items-center">
                 <!-- Search -->
                 <div class="w-full lg:flex-1 relative">
+                    <label for="agentSearch" class="sr-only">Search agents by name, area, or specialty</label>
                     <span
                         class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary">search</span>
                     <input id="agentSearch"
@@ -108,6 +109,7 @@
                 </div>
                 <!-- Filter Dropdowns -->
                 <div class="flex flex-wrap gap-3 w-full lg:w-auto">
+                    <label for="locationFilter" class="sr-only">Filter agents by location</label>
                     <select id="locationFilter"
                         class="bg-background-dark/50 border border-white/10 px-4 py-3 rounded-lg text-sm font-medium text-white focus:ring-1 focus:ring-primary focus:border-primary">
                         <option value="">All Locations</option>
@@ -137,6 +139,7 @@
                         <option value="Ratnapura">Ratnapura</option>
                         <option value="Kegalle">Kegalle</option>
                     </select>
+                    <label for="specializationFilter" class="sr-only">Filter agents by specialization</label>
                     <select id="specializationFilter"
                         class="bg-background-dark/50 border border-white/10 px-4 py-3 rounded-lg text-sm font-medium text-white focus:ring-1 focus:ring-primary focus:border-primary">
                         <option value="">All Specializations</option>
@@ -201,7 +204,7 @@
     <div id="footer"></div>
 
     <script type="module" src="/src/main.js"></script>
-    <script>
+    <script type="module">
         const API_BASE = 'http://localhost:8080';
         const grid = document.getElementById('agentsGrid');
         const searchInput = document.getElementById('agentSearch');
@@ -351,8 +354,8 @@
         locationFilter.addEventListener('change', applyFilters);
         specializationFilter.addEventListener('change', applyFilters);
 
-        loadAgents();
+        await loadAgents();
     </script>
 </body>
 
-</html
+</html>

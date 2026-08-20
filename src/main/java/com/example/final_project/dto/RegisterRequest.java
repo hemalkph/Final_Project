@@ -1,6 +1,5 @@
 package com.example.final_project.dto;
 
-import com.example.final_project.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,5 +13,4 @@ public class RegisterRequest {
     private String name;
     private String email;
     private String password;
-    private Role role;
 }

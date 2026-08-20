@@ -26,7 +26,9 @@ public class AuthenticationService {
                                 .name(request.getName())
                                 .email(request.getEmail())
                                 .password(passwordEncoder.encode(request.getPassword()))
-                                .role(request.getRole() != null ? request.getRole() : Role.USER)
+                                .role(Role.USER) // Public registration always creates a USER; other roles
+                                                 // are only granted via admin actions (seller approval, agent
+                                                 // seeding), never from client input.
                                 .enabled(true) // Enable user immediately for regular registration
                                 .build();
                 userRepository.save(user);
