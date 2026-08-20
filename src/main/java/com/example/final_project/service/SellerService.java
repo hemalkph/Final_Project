@@ -26,7 +26,6 @@ public class SellerService {
     private final SellerApplicationRepository applicationRepository;
     private final UserRepository userRepository;
     private final ActivationTokenRepository tokenRepository;
-    private final com.example.final_project.repository.StoredCredentialRepository storedCredentialRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
 
@@ -174,24 +173,22 @@ public class SellerService {
 
     @Transactional
     public java.util.List<java.util.Map<String, String>> ensurePreGeneratedSellers() {
-        // 1. Ensure the 5 fixed sellers exist
+        // The 5 demo credentials follow a fixed, documented pattern, so they're
+        // built in-memory here rather than persisted anywhere in plaintext.
+        java.util.List<java.util.Map<String, String>> credentials = new java.util.ArrayList<>();
         for (int i = 1; i <= 5; i++) {
             String email = "seller" + i + "@example.com";
             String rawPassword = "Seller" + i + "@123";
             String name = "Pre-Generated Seller " + i;
 
             ensureSellerExists(name, email, rawPassword);
-        }
 
-        // 2. Return all stored credentials for display
-        return storedCredentialRepository.findAll().stream()
-                .map(sc -> {
-                    java.util.Map<String, String> map = new java.util.HashMap<>();
-                    map.put("username", sc.getUsername());
-                    map.put("password", sc.getPassword());
-                    return map;
-                })
-                .collect(java.util.stream.Collectors.toList());
+            java.util.Map<String, String> map = new java.util.HashMap<>();
+            map.put("username", email);
+            map.put("password", rawPassword);
+            credentials.add(map);
+        }
+        return credentials;
     }
 
     @Transactional
@@ -203,7 +200,6 @@ public class SellerService {
     }
 
     private void ensureSellerExists(String name, String email, String rawPassword) {
-        // Create User if not exists
         if (userRepository.findByEmail(email).isEmpty()) {
             User user = User.builder()
                     .name(name)
@@ -213,16 +209,6 @@ public class SellerService {
                     .enabled(true)
                     .build();
             userRepository.save(user);
-        }
-
-        // Save to StoredCredential if not exists
-        if (storedCredentialRepository.findByUsername(email).isEmpty()) {
-            com.example.final_project.model.StoredCredential cred = com.example.final_project.model.StoredCredential
-                    .builder()
-                    .username(email)
-                    .password(rawPassword)
-                    .build();
-            storedCredentialRepository.save(cred);
         }
     }
 }

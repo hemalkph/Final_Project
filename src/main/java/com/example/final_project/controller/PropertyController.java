@@ -16,7 +16,6 @@ import java.util.List;
 @RequestMapping("/api/properties")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
 public class PropertyController {
 
     private final PropertyService service;
