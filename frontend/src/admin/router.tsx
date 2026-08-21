@@ -1,17 +1,22 @@
+import type { ComponentType } from 'react';
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { AdminLayout } from '@/components/layout/AdminLayout';
 import { ModulePlaceholder } from '@/components/module-placeholder';
 import { enabledNavItems } from '@/lib/nav-config';
+import { PropertiesPage } from '@/features/properties/PropertiesPage';
 
-// Phase 0: every enabled ('functional'/'partial') nav item gets a route,
-// but all of them render the same placeholder for now — no API/business
-// logic ships until later phases (see migration plan). 'absent' items have
-// no route at all (see AppSidebar's disabled rendering).
-const moduleRoutes: RouteObject[] = enabledNavItems.map((item) =>
-  item.path === '/'
-    ? { index: true, element: <ModulePlaceholder title={item.label} /> }
-    : { path: item.path.slice(1), element: <ModulePlaceholder title={item.label} /> },
-);
+// Nav item id -> real page component, filled in phase by phase. Anything
+// not listed here still falls back to ModulePlaceholder (see Phase 0).
+const MODULE_PAGES: Partial<Record<string, ComponentType>> = {
+  properties: PropertiesPage,
+};
+
+const moduleRoutes: RouteObject[] = enabledNavItems.map((item) => {
+  const Page = MODULE_PAGES[item.id] ?? (() => <ModulePlaceholder title={item.label} />);
+  return item.path === '/'
+    ? { index: true, element: <Page /> }
+    : { path: item.path.slice(1), element: <Page /> };
+});
 
 export const router = createBrowserRouter(
   [
