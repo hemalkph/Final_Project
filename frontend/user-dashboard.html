@@ -2,6 +2,9 @@
 <html class="dark" lang="en">
 
 <head>
+    <!-- Theme: read before any styling loads, to avoid a flash of the wrong theme -->
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'spring');</script>
+    <link rel="stylesheet" href="/src/theme.css">
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Monolith Realty User Dashboard</title>
@@ -15,11 +18,11 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#06f980",
+                        "primary": "var(--color-primary)",
                         "background-light": "#f5f8f7",
-                        "background-dark": "#0f2319",
-                        "card-dark": "#111111",
-                        "border-dark": "#222222",
+                        "background-dark": "var(--color-background)",
+                        "card-dark": "var(--color-card)",
+                        "border-dark": "var(--color-border)",
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"]
@@ -50,11 +53,11 @@
 
         .toggle-checkbox:checked {
             right: 0;
-            border-color: #06f980;
+            border-color: var(--color-primary);
         }
 
         .toggle-checkbox:checked+.toggle-label {
-            background-color: #06f980;
+            background-color: var(--color-primary);
         }
     </style>
 </head>
@@ -110,6 +113,10 @@
                 <p class="text-sm font-medium leading-normal">Settings</p>
             </a>
         </nav>
+        <!-- Theme Switcher -->
+        <div class="px-4 pb-2">
+            <div id="themeSwitcherMount"></div>
+        </div>
         <!-- Sidebar User Dropdown -->
         <div class="p-4 border-t border-border-dark">
             <div class="relative">
@@ -151,7 +158,7 @@
                     <h2 class="text-gray-400 text-lg font-medium">Welcome back to your property journey.</h2>
                     <div class="flex flex-wrap gap-3 mt-4">
                         <button onclick="window.location.href='/properties.html'"
-                            class="flex cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary hover:bg-green-400 transition-colors text-black text-sm font-bold tracking-[0.015em] shadow-[0_0_15px_rgba(6,249,128,0.3)]">
+                            class="flex cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary hover:bg-green-400 transition-colors text-black text-sm font-bold tracking-[0.015em] shadow-[0_0_15px_color-mix(in_srgb,var(--color-primary)_30%,transparent)]">
                             <span class="material-symbols-outlined text-[20px] mr-2">travel_explore</span>
                             Browse Properties
                         </button>
@@ -253,7 +260,7 @@
                     <p class="text-gray-400 mt-1">Manage your property listings and status.</p>
                 </div>
                 <button id="btn-add-listing"
-                    class="flex cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary hover:bg-green-400 transition-colors text-black text-sm font-bold tracking-[0.015em] shadow-[0_0_15px_rgba(6,249,128,0.3)]">
+                    class="flex cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary hover:bg-green-400 transition-colors text-black text-sm font-bold tracking-[0.015em] shadow-[0_0_15px_color-mix(in_srgb,var(--color-primary)_30%,transparent)]">
                     <span class="material-symbols-outlined text-[20px] mr-2">add_circle</span>
                     Add Listing
                 </button>
@@ -298,7 +305,7 @@
                         <p class="text-gray-400 mt-1">Manage your property listings and status.</p>
                     </div>
                     <button id="btn-add-listing"
-                        class="flex cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary hover:bg-green-400 transition-colors text-black text-sm font-bold tracking-[0.015em] shadow-[0_0_15px_rgba(6,249,128,0.3)]">
+                        class="flex cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary hover:bg-green-400 transition-colors text-black text-sm font-bold tracking-[0.015em] shadow-[0_0_15px_color-mix(in_srgb,var(--color-primary)_30%,transparent)]">
                         <span class="material-symbols-outlined text-[20px] mr-2">add_circle</span>
                         Add Listing
                     </button>
@@ -507,6 +514,10 @@
             </div>
 
             <script type="module" src="/src/main.js"></script>
+            <script type="module">
+                import { initThemeSwitcher } from '/src/main.js';
+                initThemeSwitcher(document.getElementById('themeSwitcherMount'));
+            </script>
             <script type="module">
                 import { propertyApi } from '/src/main.js';
 

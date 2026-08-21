@@ -2,6 +2,9 @@
 <html lang="en">
 
 <head>
+    <!-- Theme: read before any styling loads, to avoid a flash of the wrong theme -->
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'spring');</script>
+    <link rel="stylesheet" href="/src/theme.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Inquiries - Monolith Realty</title>
@@ -31,6 +34,7 @@
                     <h1 class="text-xl font-bold text-gray-900">Inquiry Management</h1>
                 </div>
                 <div class="flex items-center gap-3">
+                    <div id="themeSwitcherMount"></div>
                     <span id="pendingBadge"
                         class="hidden bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm font-semibold">
                         <span id="pendingCount">0</span> Pending
@@ -469,6 +473,9 @@
             loadInquiries();
             loadAgents();
         });
+    <script type="module">
+        import { initThemeSwitcher } from '/src/main.js';
+        initThemeSwitcher(document.getElementById('themeSwitcherMount'));
     </script>
 </body>
 

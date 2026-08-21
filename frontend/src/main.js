@@ -124,6 +124,63 @@ window.isPropertySaved = isPropertySaved;
 // NAVBAR INJECTION
 // ============================================
 
+// ============================================
+// THEME SWITCHER
+// ============================================
+// Two themes: "spring" (default, the site's original look) and "ocean" (a
+// distinct blue alternate). The active theme is read from a data-theme
+// attribute on <html>, set on every page by a small inline script at the
+// top of <head> (before Tailwind runs, to avoid a flash of the wrong
+// theme). This function only renders the toggle control and persists the
+// choice — see theme.css for the actual token values.
+const THEME_STORAGE_KEY = 'theme';
+const THEMES = ['spring', 'ocean'];
+
+const getCurrentTheme = () =>
+    localStorage.getItem(THEME_STORAGE_KEY) || document.documentElement.getAttribute('data-theme') || 'spring';
+
+const applyTheme = (theme) => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+};
+
+/**
+ * Renders a theme toggle button into `container` and wires its click
+ * handler. Safe to call on any page — pages using setupNavbar get this
+ * automatically; pages with their own hardcoded nav call it directly with
+ * whatever element they want the control to live in.
+ */
+export const initThemeSwitcher = (container) => {
+    if (!container) return;
+
+    const button = document.createElement('button');
+    button.id = 'themeSwitcherBtn';
+    button.type = 'button';
+    button.className = 'theme-switcher-btn';
+    button.setAttribute('aria-label', 'Switch color theme');
+
+    const render = () => {
+        const current = getCurrentTheme();
+        const label = current === 'ocean' ? 'Ocean' : 'Spring';
+        button.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13L21 7.5m0 0L16.5 12M21 7.5H7.5"></path>
+            </svg>
+            <span>${label}</span>
+        `;
+        button.title = `Theme: ${label} (click to switch)`;
+    };
+
+    button.addEventListener('click', () => {
+        const next = THEMES[(THEMES.indexOf(getCurrentTheme()) + 1) % THEMES.length];
+        applyTheme(next);
+        render();
+    });
+
+    render();
+    container.appendChild(button);
+};
+
 export const setupNavbar = () => {
     const navbar = document.getElementById('navbar');
     if (!navbar) return;
@@ -216,6 +273,7 @@ export const setupNavbar = () => {
                     
                     <!-- Action Buttons -->
                     <div class="nav-actions">
+                        <div id="themeSwitcherMount"></div>
                         ${userDropdownHTML}
                         
                         <!-- Mobile Menu Button -->
@@ -277,6 +335,8 @@ export const setupNavbar = () => {
             }
         });
     }
+
+    initThemeSwitcher(document.getElementById('themeSwitcherMount'));
 };
 
 // ============================================
@@ -284,7 +344,17 @@ export const setupNavbar = () => {
 // ============================================
 
 export const propertyApi = {
-    getAll: () => api.get('/properties'),
+    // params: { q, type, houseType } — all optional. Omitting all three
+    // returns everything (same as the old no-arg getAll()), so existing
+    // callers that don't pass params are unaffected.
+    getAll: (params = {}) => {
+        const query = new URLSearchParams();
+        if (params.q) query.set('q', params.q);
+        if (params.type) query.set('type', params.type);
+        if (params.houseType) query.set('houseType', params.houseType);
+        const qs = query.toString();
+        return api.get(`/properties${qs ? `?${qs}` : ''}`);
+    },
     getById: (id) => api.get(`/properties/${id}`),
     search: (query) => api.get(`/properties/search?q=${query}`),
     getByType: (type) => api.get(`/properties/type/${type}`)

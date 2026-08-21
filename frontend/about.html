@@ -2,6 +2,9 @@
 <html lang="en">
 
 <head>
+    <!-- Theme: read before any styling loads, to avoid a flash of the wrong theme -->
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'spring');</script>
+    <link rel="stylesheet" href="/src/theme.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - Monolith Realty</title>
@@ -20,12 +23,12 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#11d661",
-                        "primary-dark": "#0eb954",
+                        "primary": "var(--color-primary)",
+                        "primary-dark": "var(--color-primary-hover)",
                         "background-light": "#f5f8f7",
-                        "background-dark": "#102219",
-                        "surface-dark": "#183426",
-                        "border-dark": "#31684d",
+                        "background-dark": "var(--color-background)",
+                        "surface-dark": "var(--color-surface)",
+                        "border-dark": "var(--color-border)",
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"],
@@ -62,14 +65,14 @@
             transform: translateX(-50%) translateY(10px);
             padding: 12px 20px;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border: 1px solid #11d661;
+            border: 1px solid var(--color-primary);
             border-radius: 12px;
             white-space: nowrap;
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             z-index: 100;
-            box-shadow: 0 10px 40px rgba(17, 214, 97, 0.2);
+            box-shadow: 0 10px 40px color-mix(in srgb, var(--color-primary) 20%, transparent);
         }
 
         .team-title-link .tooltip::after {
@@ -79,11 +82,11 @@
             left: 50%;
             transform: translateX(-50%);
             border: 8px solid transparent;
-            border-top-color: #11d661;
+            border-top-color: var(--color-primary);
         }
 
         .team-title-link .tooltip-text {
-            color: #11d661;
+            color: var(--color-primary);
             font-weight: 700;
             font-size: 14px;
             display: flex;
@@ -115,7 +118,7 @@
         }
 
         .team-title-link:hover h2 {
-            color: #11d661;
+            color: var(--color-primary);
         }
 
         /* Transition Overlay Styles */
@@ -188,7 +191,7 @@
 
         .transition-code {
             font-family: 'Courier New', monospace;
-            color: #11d661;
+            color: var(--color-primary);
             font-size: 14px;
             text-align: left;
             line-height: 1.8;
@@ -210,7 +213,7 @@
             display: inline-block;
             width: 10px;
             height: 20px;
-            background: #11d661;
+            background: var(--color-primary);
             animation: blink 0.8s infinite;
             vertical-align: middle;
             margin-left: 4px;

@@ -2,6 +2,9 @@
 <html lang="en" class="dark">
 
 <head>
+    <!-- Theme: read before any styling loads, to avoid a flash of the wrong theme -->
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'spring');</script>
+    <link rel="stylesheet" href="/src/theme.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Property Details - RealEstate</title>
@@ -14,12 +17,12 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#00FF7F", // Spring Green
+                        primary: "var(--color-primary)",
                         "background-light": "#F3F4F6", // Light Gray for Light Mode
-                        "background-dark": "#000000", // Pitch Black for Dark Mode
+                        "background-dark": "var(--color-background)",
                         "surface-light": "#FFFFFF",
-                        "surface-dark": "#111111", // Slightly lighter black for cards
-                        "surface-dark-accent": "#1A1A1A",
+                        "surface-dark": "var(--color-surface)",
+                        "surface-dark-accent": "var(--color-card)",
                     },
                     fontFamily: {
                         display: ["Inter", "sans-serif"],

@@ -2,6 +2,9 @@
 <html class="dark" lang="en">
 
 <head>
+    <!-- Theme: read before any styling loads, to avoid a flash of the wrong theme -->
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'spring');</script>
+    <link rel="stylesheet" href="/src/theme.css">
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Agent Inquiries - Monolith Realty</title>
@@ -15,11 +18,11 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#11d661",
-                        "background-dark": "#050505",
-                        "card-dark": "#111111",
-                        "border-dark": "#222222",
-                        "text-secondary": "#9ca3af",
+                        "primary": "var(--color-primary)",
+                        "background-dark": "var(--color-background)",
+                        "card-dark": "var(--color-card)",
+                        "border-dark": "var(--color-border)",
+                        "text-secondary": "var(--color-text-secondary)",
                     },
                     fontFamily: {
                         "sans": ["Manrope", "sans-serif"],
@@ -110,6 +113,7 @@
                     <h1 class="text-2xl md:text-3xl font-bold text-white">My Inquiries</h1>
                     <p class="text-gray-400 mt-1">Manage property inquiries assigned to you</p>
                 </div>
+                <div id="themeSwitcherMount"></div>
                 <div class="flex gap-2">
                     <button onclick="filterInquiries('ALL')"
                         class="filter-btn active px-4 py-2 text-sm rounded-lg transition-colors"
@@ -358,6 +362,9 @@
             filterInquiries('ALL');
             loadInquiries();
         });
+    <script type="module">
+        import { initThemeSwitcher } from '/src/main.js';
+        initThemeSwitcher(document.getElementById('themeSwitcherMount'));
     </script>
 </body>
 

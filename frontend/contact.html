@@ -2,6 +2,9 @@
 <html lang="en">
 
 <head>
+    <!-- Theme: read before any styling loads, to avoid a flash of the wrong theme -->
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'spring');</script>
+    <link rel="stylesheet" href="/src/theme.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
@@ -20,10 +23,10 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#11d661',
-                        surface: '#0D0D0D',
-                        'dark-card': '#1E1E1E',
-                        'dark-border': '#2A2A2A',
+                        primary: 'var(--color-primary)',
+                        surface: 'var(--color-background)',
+                        'dark-card': 'var(--color-card)',
+                        'dark-border': 'var(--color-border)',
                     },
                     fontFamily: {
                         sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
@@ -63,7 +66,7 @@
         }
 
         .glass-card:hover {
-            border-color: rgba(17, 214, 97, 0.4);
+            border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
         }
 
         .social-btn {
@@ -100,7 +103,7 @@
 
         select.form-input option:checked,
         select.form-input option:hover {
-            background: #11d661 !important;
+            background: var(--color-primary) !important;
             color: black !important;
         }
 
@@ -116,8 +119,8 @@
         }
 
         .form-input:focus {
-            border-color: #11d661;
-            box-shadow: 0 0 0 3px rgba(17, 214, 97, 0.15);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent);
             outline: none;
         }
 
@@ -126,13 +129,13 @@
         }
 
         .submit-btn {
-            background: linear-gradient(135deg, #11d661 0%, #0eb954 100%);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
             transition: all 0.3s ease;
         }
 
         .submit-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(17, 214, 97, 0.3);
+            box-shadow: 0 8px 30px color-mix(in srgb, var(--color-primary) 30%, transparent);
         }
 
         @keyframes float {

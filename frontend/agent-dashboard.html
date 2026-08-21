@@ -2,6 +2,9 @@
 <html class="dark" lang="en">
 
 <head>
+    <!-- Theme: read before any styling loads, to avoid a flash of the wrong theme -->
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'spring');</script>
+    <link rel="stylesheet" href="/src/theme.css">
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Agent Dashboard - Real Estate</title>
@@ -16,11 +19,11 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#11d661", // Spring Green
-                        "background-dark": "#050505", // Deep Charcoal
-                        "card-dark": "#111111", // Dark Gray Surface
-                        "border-dark": "#222222",
-                        "text-secondary": "#9ca3af", // Light Gray
+                        "primary": "var(--color-primary)",
+                        "background-dark": "var(--color-background)",
+                        "card-dark": "var(--color-card)",
+                        "border-dark": "var(--color-border)",
+                        "text-secondary": "var(--color-text-secondary)",
                     },
                     fontFamily: {
                         "sans": ["Manrope", "sans-serif"],
@@ -147,6 +150,7 @@
                         happening today.</p>
                 </div>
                 <div class="flex gap-3">
+                    <div id="themeSwitcherMount"></div>
                     <button
                         class="flex items-center justify-center w-10 h-10 rounded-full bg-[#111] border border-white/10 hover:border-primary text-gray-400 hover:text-primary transition-colors relative">
                         <span class="material-symbols-outlined">notifications</span>
@@ -605,6 +609,10 @@
 
     <script type="module" src="/src/main.js"></script>
     <script type="module" src="/src/agent-dashboard.js"></script>
+    <script type="module">
+        import { initThemeSwitcher } from '/src/main.js';
+        initThemeSwitcher(document.getElementById('themeSwitcherMount'));
+    </script>
 </body>
 
 </html>
