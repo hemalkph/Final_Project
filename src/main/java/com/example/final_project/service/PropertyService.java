@@ -152,6 +152,9 @@ public class PropertyService {
         existingProperty.setBathrooms(updatedProperty.getBathrooms());
         existingProperty.setAreaSqFt(updatedProperty.getAreaSqFt());
         existingProperty.setAssignedAgent(updatedProperty.getAssignedAgent());
+        existingProperty.setFacilities(updatedProperty.getFacilities());
+        existingProperty.setImageUrls(updatedProperty.getImageUrls());
+        existingProperty.setHouseRules(updatedProperty.getHouseRules());
 
         return propertyRepository.save(existingProperty);
     }
