@@ -2,6 +2,9 @@
 <html class="dark" lang="en">
 
 <head>
+    <!-- Theme: read before any styling loads, to avoid a flash of the wrong theme -->
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'spring');</script>
+    <link rel="stylesheet" href="/src/theme.css">
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Monolith Realty Agents Directory</title>
@@ -16,11 +19,11 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#00ff80",
+                        "primary": "var(--color-primary)",
                         "background-light": "#f5f8f7",
-                        "background-dark": "#000000", // True black for high-end feel
-                        "surface-dark": "#121212",   // Slightly lighter for cards
-                        "border-dark": "#204b36",
+                        "background-dark": "var(--color-background)",
+                        "surface-dark": "var(--color-surface)",
+                        "border-dark": "var(--color-border)",
                     },
                     fontFamily: {
                         "display": ["Manrope", "sans-serif"]
@@ -38,7 +41,7 @@
     <style>
         .agent-card-hover:hover {
             transform: translateY(-8px);
-            box-shadow: 0 10px 30px -10px rgba(0, 255, 128, 0.2);
+            box-shadow: 0 10px 30px -10px color-mix(in srgb, var(--color-primary) 20%, transparent);
         }
 
         .glass-header {
@@ -354,7 +357,7 @@
         locationFilter.addEventListener('change', applyFilters);
         specializationFilter.addEventListener('change', applyFilters);
 
-        await loadAgents();
+        loadAgents();
     </script>
 </body>
 
