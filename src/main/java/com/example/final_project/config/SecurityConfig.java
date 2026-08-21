@@ -35,6 +35,12 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
+                        // Spring MVC forwards unhandled exceptions to /error internally;
+                        // without this, any exception on an otherwise-public endpoint
+                        // (e.g. a bad query param) surfaces as an opaque 403 instead of
+                        // the real status code, since /error itself falls under
+                        // anyRequest().authenticated() below.
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/api/auth/**", "/api/properties/**", "/api/agents/**", "/api/files/**",
                                 "/uploads/**")
                         .permitAll()

@@ -1,6 +1,7 @@
 package com.example.final_project.controller;
 
 import com.example.final_project.model.Property;
+import com.example.final_project.model.HouseType;
 import com.example.final_project.model.PropertyType;
 import com.example.final_project.service.PropertyService;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,14 @@ public class PropertyController {
     private final PropertyService service;
 
     @GetMapping
-    public ResponseEntity<List<Property>> getAllProperties() {
-        return ResponseEntity.ok(service.getAllProperties());
+    public ResponseEntity<List<Property>> getAllProperties(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) PropertyType type,
+            @RequestParam(required = false) HouseType houseType) {
+        if (q == null && type == null && houseType == null) {
+            return ResponseEntity.ok(service.getAllProperties());
+        }
+        return ResponseEntity.ok(service.searchProperties(q, type, houseType));
     }
 
     @GetMapping("/{id}")

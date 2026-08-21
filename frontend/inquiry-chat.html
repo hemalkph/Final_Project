@@ -3,6 +3,9 @@
 <html class="dark" lang="en">
 
 <head>
+    <!-- Theme: read before any styling loads, to avoid a flash of the wrong theme -->
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'spring');</script>
+    <link rel="stylesheet" href="/src/theme.css">
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Inquiry Chat Details</title>
@@ -28,13 +31,13 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#06f980",
-                        "primary-hover": "#05d66d",
+                        "primary": "var(--color-primary)",
+                        "primary-hover": "var(--color-primary-hover)",
                         "background-light": "#f5f8f7",
-                        "background-dark": "#0f2319", // Dark green tint for subtle backgrounds
-                        "surface-dark": "#111814",
-                        "chat-user-bg": "#1a1a1a",
-                        "chat-agent-bg": "#000000",
+                        "background-dark": "var(--color-background)",
+                        "surface-dark": "var(--color-surface)",
+                        "chat-user-bg": "var(--color-chat-user-bg)",
+                        "chat-agent-bg": "var(--color-chat-agent-bg)",
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"],
@@ -68,7 +71,7 @@
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #06f980;
+            background: var(--color-primary);
         }
     </style>
 </head>
@@ -198,8 +201,9 @@
                         class="flex items-center justify-center h-10 w-10 rounded-full bg-[#1b2721] hover:bg-[#273a30] text-white transition-colors xl:hidden">
                         <span class="material-symbols-outlined" data-icon="info">info</span>
                     </button>
+                    <div id="themeSwitcherMount"></div>
                     <button
-                        class="hidden sm:flex h-10 px-5 items-center justify-center rounded-lg bg-primary hover:bg-primary-hover text-black text-sm font-bold shadow-[0_0_15px_rgba(6,249,128,0.2)] transition-all">
+                        class="hidden sm:flex h-10 px-5 items-center justify-center rounded-lg bg-primary hover:bg-primary-hover text-black text-sm font-bold shadow-[0_0_15px_color-mix(in_srgb,var(--color-primary)_20%,transparent)] transition-all">
                         Request Visit
                     </button>
                 </div>
@@ -239,10 +243,10 @@
                             <span class="text-[#9bbbab] text-xs">You</span>
                         </div>
                         <div
-                            class="relative px-5 py-4 bg-[#1a1a1a] border border-primary/50 rounded-2xl rounded-br-none text-primary shadow-[0_0_10px_rgba(6,249,128,0.05)] text-sm leading-relaxed">
+                            class="relative px-5 py-4 bg-[#1a1a1a] border border-primary/50 rounded-2xl rounded-br-none text-primary shadow-[0_0_10px_color-mix(in_srgb,var(--color-primary)_5%,transparent)] text-sm leading-relaxed">
                             Yes, actually. Are pets allowed in this complex? We have a Golden Retriever.
                         </div>
-                        <div class="flex items-center gap-1 text-[#06f980] text-[10px] mr-1 opacity-80">
+                        <div class="flex items-center gap-1 text-[var(--color-primary)] text-[10px] mr-1 opacity-80">
                             Seen <span class="material-symbols-outlined text-[12px]"
                                 data-icon="done_all">done_all</span>
                         </div>
@@ -534,7 +538,7 @@
                                 <span class="text-[#566860] text-[10px]">${formatTime(msg.createdAt)}</span>
                                 <span class="text-[#9bbbab] text-xs">You</span>
                             </div>
-                            <div class="relative px-5 py-4 bg-[#1a1a1a] border border-primary/50 rounded-2xl rounded-br-none text-primary shadow-[0_0_10px_rgba(6,249,128,0.05)] text-sm leading-relaxed">
+                            <div class="relative px-5 py-4 bg-[#1a1a1a] border border-primary/50 rounded-2xl rounded-br-none text-primary shadow-[0_0_10px_color-mix(in_srgb,var(--color-primary)_5%,transparent)] text-sm leading-relaxed">
                                 ${msg.text}
                             </div>
                         </div>
@@ -740,6 +744,9 @@
                 stompClient.disconnect();
             }
         });
+    <script type="module">
+        import { initThemeSwitcher } from '/src/main.js';
+        initThemeSwitcher(document.getElementById('themeSwitcherMount'));
     </script>
 </body>
 

@@ -1,0 +1,96 @@
+/*
+ * Theme tokens for the whole site. Two themes: "spring" (the original,
+ * default look — every page keeps its existing appearance unless a user
+ * explicitly switches) and "ocean" (a distinct blue alternate palette).
+ *
+ * Applied via a data-theme attribute on <html>, set by an inline script at
+ * the top of each page's <head> (before Tailwind runs) to avoid a flash of
+ * the wrong theme on load. See main.js's initThemeSwitcher() for the UI
+ * control and persistence (localStorage key: "theme").
+ *
+ * Every page's own Tailwind config (inline or in tailwind.config.js) points
+ * its color values at these variables instead of hardcoding hex, so every
+ * page picks up whichever theme is active without page-specific changes.
+ */
+
+:root,
+:root[data-theme="spring"] {
+    --color-primary: #11d661;
+    --color-primary-hover: #0fbd54;
+    --color-background: #0b0f0d;
+    --color-surface: #121a16;
+    --color-card: #17211c;
+    --color-border: #223028;
+    --color-text-secondary: #9ca3af;
+    --color-chat-user-bg: #11d661;
+    --color-chat-agent-bg: #1e2b24;
+
+    /* shadcn/ui token aliases (React admin app only) — deliberately reuse the
+       tokens above rather than introducing a second theming system. See
+       tailwind.config.js's theme.extend.colors for how these map to
+       bg-background/text-foreground/etc. utility classes. */
+    --color-foreground: #e5e7eb;
+    --color-muted: var(--color-card);
+    --color-muted-foreground: var(--color-text-secondary);
+    --color-popover: var(--color-card);
+    --color-popover-foreground: #e5e7eb;
+    --color-primary-foreground: #04170b;
+    --color-secondary-foreground: #e5e7eb;
+    --color-accent-foreground: #e5e7eb;
+    --color-destructive: #ef4444;
+    --color-destructive-foreground: #ffffff;
+    --color-ring: var(--color-primary);
+    --color-input: var(--color-border);
+
+    /* shadcn/ui Sidebar component tokens — a subtly distinct surface from
+       the main content area, still built from the same palette above. */
+    --color-sidebar: var(--color-surface);
+    --color-sidebar-foreground: var(--color-foreground);
+    --color-sidebar-primary: var(--color-primary);
+    --color-sidebar-primary-foreground: var(--color-primary-foreground);
+    --color-sidebar-accent: var(--color-card);
+    --color-sidebar-accent-foreground: var(--color-foreground);
+    --color-sidebar-border: var(--color-border);
+    --color-sidebar-ring: var(--color-primary);
+}
+
+:root[data-theme="ocean"] {
+    --color-primary: #2f8fe0;
+    --color-primary-hover: #4fa8ef;
+    --color-background: #0a1420;
+    --color-surface: #0f1f30;
+    --color-card: #14283c;
+    --color-border: #1f3a52;
+    --color-text-secondary: #94a8be;
+    --color-chat-user-bg: #2f8fe0;
+    --color-chat-agent-bg: #16293b;
+
+    /* shadcn/ui token aliases (React admin app only) — see spring block above */
+    --color-foreground: #dbe6f0;
+    --color-muted: var(--color-card);
+    --color-muted-foreground: var(--color-text-secondary);
+    --color-popover: var(--color-card);
+    --color-popover-foreground: #dbe6f0;
+    --color-primary-foreground: #ffffff;
+    --color-secondary-foreground: #dbe6f0;
+    --color-accent-foreground: #dbe6f0;
+    --color-destructive: #ef4444;
+    --color-destructive-foreground: #ffffff;
+    --color-ring: var(--color-primary);
+    --color-input: var(--color-border);
+
+    /* shadcn/ui Sidebar component tokens — see spring block above */
+    --color-sidebar: var(--color-surface);
+    --color-sidebar-foreground: var(--color-foreground);
+    --color-sidebar-primary: var(--color-primary);
+    --color-sidebar-primary-foreground: var(--color-primary-foreground);
+    --color-sidebar-accent: var(--color-card);
+    --color-sidebar-accent-foreground: var(--color-foreground);
+    --color-sidebar-border: var(--color-border);
+    --color-sidebar-ring: var(--color-primary);
+}
+
+:root {
+    /* Not theme-dependent — shared radius scale for shadcn components. */
+    --radius: 0.75rem;
+}

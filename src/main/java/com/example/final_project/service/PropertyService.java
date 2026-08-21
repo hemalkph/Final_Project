@@ -37,6 +37,17 @@ public class PropertyService {
         return propertyRepository.findAll();
     }
 
+    /**
+     * Server-side equivalent of properties.html's old client-side
+     * applyFilters(). All params optional; when all are null this returns
+     * exactly what getAllProperties() returns, so existing callers relying
+     * on GET /api/properties with no params are unaffected.
+     */
+    public List<Property> searchProperties(String q, PropertyType type, HouseType houseType) {
+        String normalizedQ = (q == null || q.isBlank()) ? null : q.trim();
+        return propertyRepository.search(normalizedQ, type, houseType);
+    }
+
     public List<Property> searchProperties(String query) {
         // Search by title or address
         return propertyRepository.findByTitleContainingIgnoreCaseOrAddressContainingIgnoreCase(query, query);

@@ -185,9 +185,13 @@ function initPerformanceChart() {
     const ctx = document.getElementById('performanceChart');
     if (!ctx) return;
 
+    // Chart.js/Canvas can't resolve var(--color-primary) directly, so read
+    // the active theme's color at init time instead of hardcoding it.
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
+
     const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, 'rgba(17, 214, 97, 0.5)');
-    gradient.addColorStop(1, 'rgba(17, 214, 97, 0.0)');
+    gradient.addColorStop(0, `color-mix(in srgb, ${primaryColor} 50%, transparent)`);
+    gradient.addColorStop(1, `color-mix(in srgb, ${primaryColor} 0%, transparent)`);
 
     new Chart(ctx, {
         type: 'line',
@@ -196,10 +200,10 @@ function initPerformanceChart() {
             datasets: [{
                 label: 'Inquiries',
                 data: [12, 19, 15, 25, 22, 30, 28],
-                borderColor: '#11d661',
+                borderColor: primaryColor,
                 backgroundColor: gradient,
                 borderWidth: 2,
-                pointBackgroundColor: '#11d661',
+                pointBackgroundColor: primaryColor,
                 pointBorderColor: '#fff',
                 fill: true,
                 tension: 0.4

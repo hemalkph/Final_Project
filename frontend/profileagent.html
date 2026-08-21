@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 
 <html class="dark" lang="en"><head>
+    <!-- Theme: read before any styling loads, to avoid a flash of the wrong theme -->
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'spring');</script>
+    <link rel="stylesheet" href="/src/theme.css">
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Agent Professional Profile | EstatePro</title>
@@ -14,11 +17,11 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#00ff80",
+                        "primary": "var(--color-primary)",
                         "background-light": "#f5f8f7",
-                        "background-dark": "#0b0b0b",
-                        "surface-dark": "#161b18",
-                        "accent-dark": "#204b36",
+                        "background-dark": "var(--color-background)",
+                        "surface-dark": "var(--color-surface)",
+                        "accent-dark": "var(--color-border)",
                     },
                     fontFamily: {
                         "display": ["Manrope", "sans-serif"]
@@ -67,6 +70,7 @@
                 <span class="material-symbols-outlined text-slate-400 text-xl">search</span>
                 <input class="bg-transparent border-none focus:ring-0 text-sm w-40 lg:w-60 placeholder:text-slate-500" placeholder="Search agents or listings..."/>
             </label>
+            <div id="themeSwitcherMount"></div>
             <button class="bg-primary hover:bg-primary/90 text-background-dark text-sm font-bold px-5 py-2 rounded-lg transition-transform active:scale-95">
                 Agent Portal
             </button>
@@ -272,4 +276,8 @@
         <a class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-primary transition-colors" href="#">Licensing</a>
     </div>
 </footer>
+<script type="module">
+    import { initThemeSwitcher } from '/src/main.js';
+    initThemeSwitcher(document.getElementById('themeSwitcherMount'));
+</script>
 </body></html>
