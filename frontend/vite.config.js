@@ -1,7 +1,19 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+    // React plugin only transforms .jsx/.tsx files — every existing vanilla
+    // HTML/JS page is untouched by this.
+    plugins: [react()],
+    resolve: {
+        alias: {
+            // Scoped to the new React admin tree only (shadcn's generated
+            // imports use "@/..."). Nothing outside src/admin resolves through
+            // this alias, so it can't affect any other page.
+            '@': resolve(__dirname, 'src/admin'),
+        },
+    },
     build: {
         rollupOptions: {
             input: {
@@ -15,6 +27,11 @@ export default defineConfig({
                 admin_dashboard: resolve(__dirname, 'admin-dashboard.html'),
                 user_dashboard: resolve(__dirname, 'user-dashboard.html'),
                 contact: resolve(__dirname, 'contact.html'),
+                // Temporary Phase-0 scratch entry for the new React admin app.
+                // Deliberately NOT admin-dashboard.html — the old dashboard stays
+                // untouched and reachable until its replacement is verified
+                // (see Phase 1 of the migration plan).
+                admin_react_preview: resolve(__dirname, 'admin-react-preview.html'),
             },
         },
     },

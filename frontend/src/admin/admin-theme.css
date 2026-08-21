@@ -1,0 +1,18 @@
+/*
+ * Tailwind entry for the React admin app only. Color values come from
+ * src/theme.css (data-theme="spring"/"ocean"), mapped to shadcn/ui's
+ * expected token names in tailwind.config.js — this file does not define
+ * its own colors. See src/theme.css for the mapping.
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
