@@ -23,6 +23,13 @@ export interface ImageUploaderProps {
   maxSizeMb?: number;
   disabled?: boolean;
   className?: string;
+  /**
+   * Fires whenever this uploader starts or stops having in-flight uploads,
+   * so a host form can block submission until every file has landed.
+   * Failed uploads do NOT count as in-flight — they will simply never
+   * contribute a URL, so there is nothing left to wait for.
+   */
+  onUploadingChange?: (isUploading: boolean) => void;
 }
 
 /** An upload that hasn't been committed to `value` yet. */
@@ -55,6 +62,7 @@ export function ImageUploader({
   maxSizeMb = DEFAULT_MAX_SIZE_MB,
   disabled = false,
   className,
+  onUploadingChange,
 }: ImageUploaderProps) {
   const [pending, setPending] = React.useState<PendingItem[]>([]);
   const [rejections, setRejections] = React.useState<string[]>([]);
@@ -64,15 +72,38 @@ export function ImageUploader({
   const dragDepth = React.useRef(0);
 
   // Async upload callbacks resolve long after the render that started them,
-  // so read `value`/`onChange` through refs rather than capturing them —
-  // otherwise two uploads finishing together would each append to the same
-  // stale array and the first URL would be lost.
+  // so read `value`/`onChange` through refs rather than capturing them.
   const valueRef = React.useRef(value);
   const onChangeRef = React.useRef(onChange);
   React.useEffect(() => {
     valueRef.current = value;
     onChangeRef.current = onChange;
   });
+
+  const isSingle = maxFiles === 1;
+
+  /**
+   * Commit one uploaded URL.
+   *
+   * Refreshing valueRef from props in an effect is not enough on its own:
+   * effects run after commit, so several uploads finishing in the SAME tick
+   * would each read the same pre-update array and the last writer would
+   * clobber the others (dropping 3 files reliably kept only 2). Writing the
+   * new array back to the ref synchronously means a sibling completing in
+   * the same tick appends to the up-to-date list instead.
+   *
+   * A single-slot uploader replaces instead of appending, and only at this
+   * point — see addFiles for why the old value is deliberately kept until
+   * the replacement has actually landed.
+   */
+  const commitUrl = React.useCallback(
+    (url: string) => {
+      const next = isSingle ? [url] : [...valueRef.current, url];
+      valueRef.current = next;
+      onChangeRef.current(next);
+    },
+    [isSingle],
+  );
 
   // Abort in-flight requests and release object URLs if we unmount mid-upload.
   const pendingRef = React.useRef<PendingItem[]>([]);
@@ -89,10 +120,33 @@ export function ImageUploader({
     [],
   );
 
-  const isSingle = maxFiles === 1;
-  const usedSlots = value.length + pending.length;
+  // Report in-flight status upward. Kept in a ref so a host passing an
+  // inline arrow function doesn't re-fire this on every render.
+  const isUploading = pending.some((p) => p.status === 'uploading');
+  const onUploadingChangeRef = React.useRef(onUploadingChange);
+  React.useEffect(() => {
+    onUploadingChangeRef.current = onUploadingChange;
+  });
+  React.useEffect(() => {
+    onUploadingChangeRef.current?.(isUploading);
+  }, [isUploading]);
+  // Unmounting (e.g. the host dialog closed mid-upload) means nothing is
+  // pending from this uploader's perspective any more — say so, or the host
+  // is left permanently believing an upload is still running.
+  React.useEffect(() => () => onUploadingChangeRef.current?.(false), []);
+
+  // A single slot being replaced still occupies exactly one slot, even
+  // though the outgoing value and the incoming upload briefly coexist.
+  const usedSlots = isSingle
+    ? Math.min(1, value.length + pending.length)
+    : value.length + pending.length;
   const remainingSlots = maxFiles === undefined ? Infinity : Math.max(0, maxFiles - usedSlots);
   const isFull = remainingSlots === 0 && !isSingle;
+
+  // While a replacement is in flight (or failed and awaiting retry) the old
+  // image stays in `value` as a fallback, but showing both at once in a
+  // one-image control would be confusing — show only the incoming tile.
+  const visibleValue = isSingle && pending.length > 0 ? [] : value;
 
   const startUpload = React.useCallback(
     (item: PendingItem) => {
@@ -106,7 +160,7 @@ export function ImageUploader({
         .then((publicUrl) => {
           URL.revokeObjectURL(item.objectUrl);
           setPending((prev) => prev.filter((p) => p.id !== item.id));
-          onChangeRef.current([...valueRef.current, publicUrl]);
+          commitUrl(publicUrl);
         })
         .catch((error: unknown) => {
           // A cancelled upload was removed by the user — its tile is already
@@ -119,7 +173,7 @@ export function ImageUploader({
           );
         });
     },
-    [folder],
+    [folder, commitUrl],
   );
 
   const addFiles = React.useCallback(
@@ -156,8 +210,11 @@ export function ImageUploader({
             progress: 0,
             controller: new AbortController(),
           };
+          // Keep the current image until the replacement succeeds: clearing
+          // it here means a failed upload silently destroys the existing
+          // image with no way back. commitUrl swaps it on success instead,
+          // and dismissing a failed tile restores what was already there.
           setPending([item]);
-          onChangeRef.current([]);
           startUpload(item);
         }
         if (accepted.length > 1) {
@@ -220,7 +277,9 @@ export function ImageUploader({
   };
 
   const removeCommitted = (url: string) => {
-    onChangeRef.current(valueRef.current.filter((u) => u !== url));
+    const next = valueRef.current.filter((u) => u !== url);
+    valueRef.current = next;
+    onChangeRef.current(next);
   };
 
   const openPicker = () => {
@@ -314,9 +373,9 @@ export function ImageUploader({
         </Alert>
       )}
 
-      {(value.length > 0 || pending.length > 0) && (
+      {(visibleValue.length > 0 || pending.length > 0) && (
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-          {value.map((url) => (
+          {visibleValue.map((url) => (
             <ImagePreview
               key={url}
               src={url}
