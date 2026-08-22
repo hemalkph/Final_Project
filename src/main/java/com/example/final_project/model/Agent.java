@@ -1,5 +1,6 @@
 package com.example.final_project.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -56,7 +57,14 @@ public class Agent {
     @Builder.Default
     private AgentStatus status = AgentStatus.ACTIVE;
 
-    // Link to the User account for this agent (for login/authentication)
+    // Link to the User account for this agent (for login/authentication).
+    // @JsonIgnore: this must never leave the server. GET /api/agents/public
+    // and GET /api/agents/{id} are unauthenticated, and the raw User
+    // relation (id, email, role, enabled, plus Hibernate proxy internals)
+    // was being serialized to anyone. Verified no frontend page reads
+    // agent.linkedUser. Also blocks it as a request-body deserialization
+    // target, closing off reassigning the linkage via the JSON API.
+    @JsonIgnore
     @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "linked_user_id")
     private User linkedUser;
