@@ -17,10 +17,13 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -172,5 +175,100 @@ class AgentApiSecurityTest {
         assertNotNull(reloaded.getLinkedUser(), "existing linkage must be preserved");
         assertEquals(linked.getId(), reloaded.getLinkedUser().getId(),
                 "updateAgent must not let the request body reassign linkedUser");
+    }
+
+    @Test
+    void createAgent_ignoresClientSuppliedId() throws Exception {
+        Agent existing = agentRepository.save(Agent.builder()
+                .name("Pre-existing Agent")
+                .email("pre-existing@example.com")
+                .title("Consultant")
+                .status(AgentStatus.ACTIVE)
+                .build());
+
+        String body = """
+                {
+                  "id": %d,
+                  "name": "Overwrite Attempt",
+                  "email": "overwrite-attempt@example.com",
+                  "title": "Impostor",
+                  "status": "ACTIVE"
+                }
+                """.formatted(existing.getId());
+
+        mockMvc.perform(post("/api/agents")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body)
+                        .with(user("admin@example.com").roles("ADMIN")))
+                .andExpect(status().isOk());
+
+        // The pre-existing agent must be untouched...
+        Agent reloaded = agentRepository.findById(existing.getId()).orElseThrow();
+        assertEquals("Pre-existing Agent", reloaded.getName(),
+                "createAgent must not overwrite an existing row via a client-supplied id");
+
+        // ...and a genuinely new row must exist alongside it.
+        assertEquals(2, agentRepository.count(), "createAgent must insert a new agent");
+    }
+
+    @Test
+    void createAgent_ignoresClientSuppliedCreatedAt() throws Exception {
+        String body = """
+                {
+                  "name": "Backdated Agent",
+                  "email": "backdated@example.com",
+                  "title": "Consultant",
+                  "status": "ACTIVE",
+                  "createdAt": "1999-01-01T00:00:00"
+                }
+                """;
+
+        mockMvc.perform(post("/api/agents")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body)
+                        .with(user("admin@example.com").roles("ADMIN")))
+                .andExpect(status().isOk());
+
+        Agent created = agentRepository.findByEmail("backdated@example.com").orElseThrow();
+        assertNotNull(created.getCreatedAt(), "createdAt must be set server-side");
+        assertNotEquals(1999, created.getCreatedAt().getYear(),
+                "createAgent must ignore a client-supplied createdAt");
+    }
+
+    @Test
+    void createAgent_ignoresClientSuppliedLinkedUser() throws Exception {
+        User victim = userRepository.save(User.builder()
+                .name("Unrelated Account")
+                .email("unrelated-account@example.com")
+                .password("irrelevant")
+                .role(Role.USER)
+                .enabled(true)
+                .build());
+
+        // linkedUser is @JsonIgnore'd (Fix 2), so this property is dropped
+        // on the way in regardless. createAgent() also clears it explicitly
+        // (Fix 3) - this test pins that server-side guarantee directly
+        // rather than relying on the Jackson annotation as the only
+        // boundary, per the plan's "do not rely on deserialization failure
+        // as the security boundary" requirement.
+        String body = """
+                {
+                  "name": "Hijack Attempt",
+                  "email": "hijack-attempt@example.com",
+                  "title": "Consultant",
+                  "status": "ACTIVE",
+                  "linkedUser": { "id": %d }
+                }
+                """.formatted(victim.getId());
+
+        mockMvc.perform(post("/api/agents")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body)
+                        .with(user("admin@example.com").roles("ADMIN")))
+                .andExpect(status().isOk());
+
+        Agent created = agentRepository.findByEmail("hijack-attempt@example.com").orElseThrow();
+        assertNull(created.getLinkedUser(),
+                "createAgent must not link a new agent to a client-supplied user account");
     }
 }
