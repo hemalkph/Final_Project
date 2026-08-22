@@ -54,9 +54,13 @@ public class AgentService {
         existingAgent.setDegree(updatedAgent.getDegree());
         existingAgent.setExperience(updatedAgent.getExperience());
         existingAgent.setSpecialization(updatedAgent.getSpecialization());
+        existingAgent.setLocation(updatedAgent.getLocation());
         existingAgent.setPropertiesSold(updatedAgent.getPropertiesSold());
         existingAgent.setRating(updatedAgent.getRating());
         existingAgent.setStatus(updatedAgent.getStatus());
+        // linkedUser is deliberately NOT copied: the agent-to-login-account
+        // linkage is server-owned and must not be reassignable through the
+        // admin JSON API.
 
         return agentRepository.save(existingAgent);
     }
