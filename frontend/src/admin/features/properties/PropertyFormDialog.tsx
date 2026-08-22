@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { ImageUploader } from '@/components/media/ImageUploader';
 import { agentsApi, propertiesApi } from './api';
 import { queryKeys } from '@/lib/queryKeys';
 import {
@@ -59,7 +60,7 @@ const formSchema = z.object({
   areaSqFt: z.number().nonnegative().nullable(),
   assignedAgentId: z.number().nullable(),
   facilities: z.array(z.string()),
-  imageUrlsRaw: z.string(),
+  imageUrls: z.array(z.string()),
   houseRules: z.string(),
 });
 
@@ -79,7 +80,7 @@ const EMPTY_VALUES: FormSchema = {
   areaSqFt: null,
   assignedAgentId: null,
   facilities: [],
-  imageUrlsRaw: '',
+  imageUrls: [],
   houseRules: '',
 };
 
@@ -98,7 +99,7 @@ function propertyToFormValues(property: Property): FormSchema {
     areaSqFt: property.areaSqFt,
     assignedAgentId: property.assignedAgent?.id ?? null,
     facilities: property.facilities ?? [],
-    imageUrlsRaw: (property.imageUrls ?? []).join(', '),
+    imageUrls: property.imageUrls ?? [],
     houseRules: property.houseRules ?? '',
   };
 }
@@ -118,9 +119,19 @@ export function PropertyFormDialog({ open, onOpenChange, mode, property }: Prope
     defaultValues: EMPTY_VALUES,
   });
 
+  // Tracked per-uploader so the form can block submission while any image
+  // is still in flight — saving mid-upload would persist a property whose
+  // gallery is missing the files the admin just picked.
+  const [mainUploading, setMainUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
+  const isUploading = mainUploading || galleryUploading;
+
   useEffect(() => {
     if (!open) return;
     form.reset(mode === 'edit' && property ? propertyToFormValues(property) : EMPTY_VALUES);
+    // Stale flags from a previous open would otherwise keep Save disabled.
+    setMainUploading(false);
+    setGalleryUploading(false);
   }, [open, mode, property, form]);
 
   const agentsQuery = useQuery({
@@ -131,13 +142,10 @@ export function PropertyFormDialog({ open, onOpenChange, mode, property }: Prope
 
   const mutation = useMutation({
     mutationFn: async (values: FormSchema) => {
-      const payload: PropertyFormValues = {
-        ...values,
-        imageUrls: values.imageUrlsRaw
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean),
-      };
+      // FormSchema is now structurally identical to PropertyFormValues —
+      // the uploader yields string[] directly, so the old comma-splitting
+      // adapter is gone. imageUrl/imageUrls reach the API unchanged.
+      const payload: PropertyFormValues = values;
       return mode === 'add'
         ? propertiesApi.create(payload)
         : propertiesApi.update(property!.id, payload);
@@ -154,7 +162,12 @@ export function PropertyFormDialog({ open, onOpenChange, mode, property }: Prope
     },
   });
 
-  const onSubmit = form.handleSubmit((values) => mutation.mutate(values));
+  const onSubmit = form.handleSubmit((values) => {
+    // Belt-and-braces: the Save button is already disabled while uploading,
+    // but Enter-to-submit bypasses a disabled button in some browsers.
+    if (isUploading) return;
+    mutation.mutate(values);
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -391,9 +404,18 @@ export function PropertyFormDialog({ open, onOpenChange, mode, property }: Prope
               name="imageUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Main Image URL</FormLabel>
+                  <FormLabel>Main Image</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    {/* imageUrl is a single string but the uploader speaks
+                        string[] — adapt at the boundary rather than making
+                        the reusable component aware of this field. */}
+                    <ImageUploader
+                      folder="properties"
+                      maxFiles={1}
+                      value={field.value ? [field.value] : []}
+                      onChange={(urls) => field.onChange(urls[0] ?? '')}
+                      onUploadingChange={setMainUploading}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -402,12 +424,17 @@ export function PropertyFormDialog({ open, onOpenChange, mode, property }: Prope
 
             <FormField
               control={form.control}
-              name="imageUrlsRaw"
+              name="imageUrls"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Additional Image URLs (comma-separated)</FormLabel>
+                  <FormLabel>Additional Images</FormLabel>
                   <FormControl>
-                    <Textarea rows={2} {...field} />
+                    <ImageUploader
+                      folder="properties"
+                      value={field.value}
+                      onChange={field.onChange}
+                      onUploadingChange={setGalleryUploading}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -471,8 +498,14 @@ export function PropertyFormDialog({ open, onOpenChange, mode, property }: Prope
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={mutation.isPending}>
-                {mutation.isPending ? 'Saving…' : mode === 'add' ? 'Create Property' : 'Save Changes'}
+              <Button type="submit" disabled={mutation.isPending || isUploading}>
+                {isUploading
+                  ? 'Uploading images…'
+                  : mutation.isPending
+                    ? 'Saving…'
+                    : mode === 'add'
+                      ? 'Create Property'
+                      : 'Save Changes'}
               </Button>
             </DialogFooter>
           </form>
