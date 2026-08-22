@@ -28,6 +28,19 @@ public class AgentService {
     }
 
     public Agent createAgent(Agent agent) {
+        // POST /api/agents binds a raw entity from the request body, so
+        // these three fields are server-controlled regardless of what the
+        // client sends: a supplied id turns save() into a merge, silently
+        // overwriting an existing agent; a supplied createdAt would stick
+        // because @PrePersist only fires on true inserts; linkedUser is
+        // already @JsonIgnore'd (so Jackson won't bind it from JSON), but
+        // this clears it explicitly rather than relying on that alone -
+        // the entity's own createAgent(Agent) contract shouldn't depend on
+        // which layer happens to be calling it.
+        agent.setId(null);
+        agent.setCreatedAt(null);
+        agent.setLinkedUser(null);
+
         if (agent.getStatus() == null) {
             agent.setStatus(AgentStatus.ACTIVE);
         }
@@ -54,9 +67,13 @@ public class AgentService {
         existingAgent.setDegree(updatedAgent.getDegree());
         existingAgent.setExperience(updatedAgent.getExperience());
         existingAgent.setSpecialization(updatedAgent.getSpecialization());
+        existingAgent.setLocation(updatedAgent.getLocation());
         existingAgent.setPropertiesSold(updatedAgent.getPropertiesSold());
         existingAgent.setRating(updatedAgent.getRating());
         existingAgent.setStatus(updatedAgent.getStatus());
+        // linkedUser is deliberately NOT copied: the agent-to-login-account
+        // linkage is server-owned and must not be reassignable through the
+        // admin JSON API.
 
         return agentRepository.save(existingAgent);
     }
