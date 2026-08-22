@@ -31,7 +31,8 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageUploader } from '@/components/media/ImageUploader';
-import { agentsApi, propertiesApi } from './api';
+import { propertiesApi } from './api';
+import { agentsApi } from '@/features/agents/api';
 import { queryKeys } from '@/lib/queryKeys';
 import {
   FACILITY_OPTIONS,

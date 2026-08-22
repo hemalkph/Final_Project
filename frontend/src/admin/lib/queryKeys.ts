@@ -11,6 +11,10 @@ export const queryKeys = {
     detail: (id: number) => ['properties', 'detail', id] as const,
   },
   agents: {
+    // Prefix-matches ['agents','public'] too, so an agent mutation also
+    // invalidates the Properties assignment dropdown — intentional.
+    all: () => ['agents'] as const,
+    detail: (id: number) => ['agents', 'detail', id] as const,
     publicList: () => ['agents', 'public'] as const,
   },
 };

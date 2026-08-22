@@ -1,5 +1,4 @@
 import { apiClient } from '@/lib/apiClient';
-import type { AgentOption } from '@/types/agent';
 import type { Property, PropertyFilters, PropertyFormValues } from '@/types/property';
 
 function toRequestBody(values: PropertyFormValues) {
@@ -54,14 +53,5 @@ export const propertiesApi = {
 
   remove: async (id: number): Promise<void> => {
     await apiClient.delete(`/properties/${id}`);
-  },
-};
-
-// Only used here for the assignment dropdown in Phase 1 — moves to its own
-// features/agents/api.ts once Phase 2 builds the real Agents module.
-export const agentsApi = {
-  getPublic: async (): Promise<AgentOption[]> => {
-    const { data } = await apiClient.get<AgentOption[]>('/agents/public');
-    return data;
   },
 };
