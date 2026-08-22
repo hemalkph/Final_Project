@@ -4,11 +4,13 @@ import { AdminLayout } from '@/components/layout/AdminLayout';
 import { ModulePlaceholder } from '@/components/module-placeholder';
 import { enabledNavItems } from '@/lib/nav-config';
 import { PropertiesPage } from '@/features/properties/PropertiesPage';
+import { AgentsPage } from '@/features/agents/AgentsPage';
 
 // Nav item id -> real page component, filled in phase by phase. Anything
 // not listed here still falls back to ModulePlaceholder (see Phase 0).
 const MODULE_PAGES: Partial<Record<string, ComponentType>> = {
   properties: PropertiesPage,
+  agents: AgentsPage,
 };
 
 const moduleRoutes: RouteObject[] = enabledNavItems.map((item) => {
