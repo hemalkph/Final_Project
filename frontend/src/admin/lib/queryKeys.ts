@@ -17,4 +17,13 @@ export const queryKeys = {
     detail: (id: number) => ['agents', 'detail', id] as const,
     publicList: () => ['agents', 'public'] as const,
   },
+  pendingListings: {
+    all: () => ['pending-listings'] as const,
+  },
+  sellerApplications: {
+    all: () => ['seller-applications'] as const,
+  },
+  accounts: {
+    all: () => ['accounts'] as const,
+  },
 };
