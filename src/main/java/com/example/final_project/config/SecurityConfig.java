@@ -46,7 +46,9 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/notifications/stream").permitAll()
                         .requestMatchers("/api/seller/apply", "/api/seller/activate").permitAll()
-                        // WebSocket endpoints - allow connection, auth handled via token param
+                        // WebSocket endpoints - this only covers the HTTP-layer SockJS
+                        // handshake; real STOMP identity is enforced per-CONNECT and
+                        // per-SUBSCRIBE by StompAuthChannelInterceptor, not here.
                         .requestMatchers("/ws/**").permitAll()
                         // Admin only
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
