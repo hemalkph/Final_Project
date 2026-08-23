@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AlertCircle } from 'lucide-react';
-import { isAxiosError } from 'axios';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/data-table';
+import { PageHeader } from '@/components/layout/page-header';
+import { TableSkeleton } from '@/components/table-skeleton';
+import { ErrorState } from '@/components/error-state';
 import { queryKeys } from '@/lib/queryKeys';
 import type { Property } from '@/types/property';
 import { ViewPropertyDialog } from '@/features/properties/ViewPropertyDialog';
@@ -32,36 +31,22 @@ export function PendingListingsPage() {
     onReject: setRejectProperty,
   });
 
-  const isForbidden = isAxiosError(pendingQuery.error) && pendingQuery.error.response?.status === 403;
-
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold text-foreground">Pending Listings</h1>
-        <p className="text-sm text-muted-foreground">Review and approve or reject newly submitted properties.</p>
-      </div>
+      <PageHeader
+        title="Pending Listings"
+        description="Review and approve or reject newly submitted properties."
+        actions={
+          pendingQuery.isSuccess ? (
+            <Badge variant="secondary">{pendingQuery.data.length} pending</Badge>
+          ) : undefined
+        }
+      />
 
-      {pendingQuery.isLoading && (
-        <div className="space-y-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </div>
-      )}
+      {pendingQuery.isLoading && <TableSkeleton rows={4} />}
 
       {pendingQuery.isError && (
-        <Alert variant="destructive">
-          <AlertCircle className="size-4" />
-          <AlertTitle>{isForbidden ? 'Permission denied' : 'Failed to load pending listings'}</AlertTitle>
-          <AlertDescription>
-            {isForbidden
-              ? "Your account doesn't have permission to view this. Log in as an admin and try again."
-              : 'Something went wrong reaching the server.'}
-            <Button variant="link" className="h-auto p-0 pl-2" onClick={() => pendingQuery.refetch()}>
-              Retry
-            </Button>
-          </AlertDescription>
-        </Alert>
+        <ErrorState error={pendingQuery.error} onRetry={() => pendingQuery.refetch()} resourceName="pending listings" />
       )}
 
       {pendingQuery.isSuccess && (
