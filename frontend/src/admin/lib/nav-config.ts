@@ -77,7 +77,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { id: 'reviews-moderation', label: 'Reviews & Moderation', path: '/reviews-moderation', icon: Star, status: 'absent' },
       { id: 'seller-applications', label: 'Seller Applications', path: '/seller-applications', icon: UserCheck, status: 'functional' },
-      { id: 'verification-fraud', label: 'Verification & Fraud', path: '/verification-fraud', icon: ShieldAlert, status: 'partial' },
+      { id: 'verification-fraud', label: 'Verification & Fraud', path: '/verification-fraud', icon: ShieldAlert, status: 'functional' },
       { id: 'support', label: 'Support', path: '/support', icon: LifeBuoy, status: 'absent' },
     ],
   },
@@ -85,8 +85,8 @@ export const navGroups: NavGroup[] = [
     id: 'growth',
     label: 'Growth',
     items: [
-      { id: 'locations', label: 'Locations', path: '/locations', icon: MapPin, status: 'partial' },
-      { id: 'analytics', label: 'Analytics', path: '/analytics', icon: BarChart3, status: 'partial' },
+      { id: 'locations', label: 'Locations', path: '/locations', icon: MapPin, status: 'functional' },
+      { id: 'analytics', label: 'Analytics', path: '/analytics', icon: BarChart3, status: 'functional' },
       { id: 'marketing', label: 'Marketing', path: '/marketing', icon: Megaphone, status: 'absent' },
       { id: 'content-seo', label: 'Content & SEO', path: '/content-seo', icon: FileText, status: 'absent' },
     ],

@@ -38,4 +38,7 @@ export const queryKeys = {
     list: (status?: InquiryStatus) => ['inquiries', 'list', status ?? 'ALL'] as const,
     messages: (id: number) => ['inquiries', 'messages', id] as const,
   },
+  users: {
+    all: () => ['users'] as const,
+  },
 };

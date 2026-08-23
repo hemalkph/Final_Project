@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -36,10 +37,15 @@ export function AgentsPage() {
     queryFn: agentsApi.getAll,
   });
 
+  // Seeds the Location filter from ?location= — the Locations page's
+  // breakdown links here to deep-link into a specific district. Read once
+  // on mount; the filter is otherwise plain local state like the others.
+  const [searchParams] = useSearchParams();
+
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<AgentStatus | typeof ALL_VALUE>(ALL_VALUE);
   const [specializationFilter, setSpecializationFilter] = useState(ALL_VALUE);
-  const [locationFilter, setLocationFilter] = useState(ALL_VALUE);
+  const [locationFilter, setLocationFilter] = useState(() => searchParams.get('location') ?? ALL_VALUE);
 
   // Location is free text (see types/agent.ts), so its filter options are
   // derived from whatever values are actually present — not a fabricated
