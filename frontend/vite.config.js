@@ -6,6 +6,12 @@ export default defineConfig({
     // React plugin only transforms .jsx/.tsx files — every existing vanilla
     // HTML/JS page is untouched by this.
     plugins: [react()],
+    // sockjs-client (used by the admin Messages module's STOMP client)
+    // references the Node global `global` at module scope, which doesn't
+    // exist in a browser ESM bundle — this is the standard, well-known fix.
+    define: {
+        global: 'globalThis',
+    },
     resolve: {
         alias: {
             // Scoped to the new React admin tree only (shadcn's generated

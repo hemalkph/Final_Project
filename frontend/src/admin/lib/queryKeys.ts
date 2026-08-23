@@ -1,4 +1,5 @@
 import type { PropertyFilters } from '@/types/property';
+import type { InquiryStatus } from '@/types/inquiry';
 
 /**
  * Centralized query key builders — avoids typo'd/inconsistent keys across
@@ -28,5 +29,13 @@ export const queryKeys = {
   },
   stats: {
     all: () => ['stats'] as const,
+  },
+  inquiries: {
+    // ['inquiries'] prefix-matches list(status) for any status, so the
+    // socket hook's "new inquiry" invalidation refreshes whatever filter
+    // is currently active without needing to know it.
+    all: () => ['inquiries'] as const,
+    list: (status?: InquiryStatus) => ['inquiries', 'list', status ?? 'ALL'] as const,
+    messages: (id: number) => ['inquiries', 'messages', id] as const,
   },
 };
