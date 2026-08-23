@@ -26,4 +26,7 @@ export const queryKeys = {
   accounts: {
     all: () => ['accounts'] as const,
   },
+  stats: {
+    all: () => ['stats'] as const,
+  },
 };

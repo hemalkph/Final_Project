@@ -1,3 +1,4 @@
+import { Building2 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   Sidebar,
@@ -19,9 +20,14 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="px-3 py-4">
-        <span className="text-sm font-semibold tracking-tight text-sidebar-foreground group-data-[collapsible=icon]:hidden">
-          Real Estate Admin
-        </span>
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <Building2 className="size-4" />
+          </div>
+          <span className="text-sm font-semibold tracking-tight text-sidebar-foreground group-data-[collapsible=icon]:hidden">
+            Real Estate Admin
+          </span>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         {navGroups.map((group) => (

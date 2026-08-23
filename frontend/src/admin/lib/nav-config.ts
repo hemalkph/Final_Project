@@ -56,8 +56,11 @@ export const navGroups: NavGroup[] = [
     id: 'communication',
     label: 'Communication',
     items: [
-      { id: 'messages', label: 'Messages', path: '/messages', icon: MessagesSquare, status: 'functional' },
-      { id: 'notifications', label: 'Notifications', path: '/notifications', icon: Bell, status: 'functional' },
+      // Both were previously marked 'functional' with no real page behind
+      // them (silently fell back to ModulePlaceholder) — corrected to
+      // 'absent' so the sidebar badge is honest. Real build is Phase 4.
+      { id: 'messages', label: 'Messages', path: '/messages', icon: MessagesSquare, status: 'absent' },
+      { id: 'notifications', label: 'Notifications', path: '/notifications', icon: Bell, status: 'absent' },
     ],
   },
   {

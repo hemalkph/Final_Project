@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -76,6 +77,7 @@ export function AddAccountDialog({ open, onOpenChange }: AddAccountDialogProps) 
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Add Account</DialogTitle>
+          <DialogDescription>Manually create a seller login. The credentials are shown once — save them now.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={onSubmit} className="space-y-4">

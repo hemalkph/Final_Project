@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, Plus, Search } from 'lucide-react';
-import { isAxiosError } from 'axios';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,8 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
 import { DataTable } from '@/components/data-table';
+import { PageHeader } from '@/components/layout/page-header';
+import { FilterBar } from '@/components/filter-bar';
+import { TableSkeleton } from '@/components/table-skeleton';
+import { ErrorState } from '@/components/error-state';
 import { queryKeys } from '@/lib/queryKeys';
 import { HOUSE_TYPES, PROPERTY_TYPES, type Property, type PropertyFilters } from '@/types/property';
 import { propertiesApi } from './api';
@@ -55,21 +56,19 @@ export function PropertiesPage() {
     onDelete: setDeleteProperty,
   });
 
-  const isForbidden = isAxiosError(propertiesQuery.error) && propertiesQuery.error.response?.status === 403;
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-foreground">Properties</h1>
-          <p className="text-sm text-muted-foreground">Manage all property listings.</p>
-        </div>
-        <Button onClick={() => setFormState({ mode: 'add' })}>
-          <Plus className="mr-1.5 size-4" /> Add Property
-        </Button>
-      </div>
+      <PageHeader
+        title="Properties"
+        description="Manage all property listings."
+        actions={
+          <Button onClick={() => setFormState({ mode: 'add' })}>
+            <Plus className="mr-1.5 size-4" /> Add Property
+          </Button>
+        }
+      />
 
-      <div className="flex flex-wrap gap-3">
+      <FilterBar>
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
           <Input
@@ -101,7 +100,7 @@ export function PropertiesPage() {
             setFilters((prev) => ({ ...prev, houseType: v === ALL_VALUE ? undefined : (v as PropertyFilters['houseType']) }))
           }
         >
-          <SelectTrigger className="w-44">
+          <SelectTrigger className="w-48">
             <SelectValue placeholder="House Type" />
           </SelectTrigger>
           <SelectContent>
@@ -113,29 +112,12 @@ export function PropertiesPage() {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </FilterBar>
 
-      {propertiesQuery.isLoading && (
-        <div className="space-y-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </div>
-      )}
+      {propertiesQuery.isLoading && <TableSkeleton />}
 
       {propertiesQuery.isError && (
-        <Alert variant="destructive">
-          <AlertCircle className="size-4" />
-          <AlertTitle>{isForbidden ? 'Permission denied' : 'Failed to load properties'}</AlertTitle>
-          <AlertDescription>
-            {isForbidden
-              ? "Your account doesn't have permission to view this. Log in as an admin and try again."
-              : 'Something went wrong reaching the server.'}
-            <Button variant="link" className="h-auto p-0 pl-2" onClick={() => propertiesQuery.refetch()}>
-              Retry
-            </Button>
-          </AlertDescription>
-        </Alert>
+        <ErrorState error={propertiesQuery.error} onRetry={() => propertiesQuery.refetch()} resourceName="properties" />
       )}
 
       {propertiesQuery.isSuccess && (

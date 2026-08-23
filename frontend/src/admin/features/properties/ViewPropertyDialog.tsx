@@ -6,6 +6,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import type { Property } from '@/types/property';
+import { PROPERTY_STATUS_VARIANT } from './columns';
 
 function formatDate(iso: string | null): string {
   if (!iso) return '—';
@@ -56,7 +57,7 @@ export function ViewPropertyDialog({ open, onOpenChange, property, onImageClick 
           <div className="flex flex-wrap gap-2">
             <Badge variant="secondary">{property.type}</Badge>
             {property.houseType && <Badge variant="secondary">{property.houseType}</Badge>}
-            <Badge>{property.status}</Badge>
+            <Badge variant={PROPERTY_STATUS_VARIANT[property.status]}>{property.status}</Badge>
           </div>
 
           <p className="text-lg font-semibold">{formatPrice(property.price)}</p>

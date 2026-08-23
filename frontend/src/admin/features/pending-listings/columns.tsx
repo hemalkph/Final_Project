@@ -7,6 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Thumbnail } from '@/components/thumbnail';
 import type { Property } from '@/types/property';
 
 function formatPrice(price: number): string {
@@ -32,13 +33,7 @@ export function getPendingListingColumns({ onView, onApprove, onReject }: GetCol
       id: 'thumbnail',
       header: '',
       enableSorting: false,
-      cell: ({ row }) => (
-        <div className="size-10 shrink-0 overflow-hidden rounded-md border border-border bg-muted">
-          {row.original.imageUrl && (
-            <img src={row.original.imageUrl} alt="" className="size-full object-cover" />
-          )}
-        </div>
-      ),
+      cell: ({ row }) => <Thumbnail src={row.original.imageUrl} />,
     },
     {
       accessorKey: 'title',

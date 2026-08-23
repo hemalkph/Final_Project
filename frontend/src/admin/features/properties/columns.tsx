@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import type { Property, PropertyStatus } from '@/types/property';
 
-const STATUS_VARIANT: Record<PropertyStatus, 'default' | 'secondary' | 'outline' | 'destructive'> = {
+export const PROPERTY_STATUS_VARIANT: Record<PropertyStatus, 'default' | 'secondary' | 'outline' | 'destructive'> = {
   AVAILABLE: 'default',
   PENDING: 'secondary',
   SOLD: 'outline',
@@ -75,7 +75,7 @@ export function getPropertyColumns({ onView, onEdit, onDelete }: GetColumnsArgs)
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => (
-        <Badge variant={STATUS_VARIANT[row.original.status]}>{row.original.status}</Badge>
+        <Badge variant={PROPERTY_STATUS_VARIANT[row.original.status]}>{row.original.status}</Badge>
       ),
     },
     {
