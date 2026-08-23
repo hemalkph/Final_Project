@@ -9,6 +9,10 @@ import { PendingListingsPage } from '@/features/pending-listings/PendingListings
 import { SellerApplicationsPage } from '@/features/seller-applications/SellerApplicationsPage';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { MessagesPage } from '@/features/messages/MessagesPage';
+import { UsersPage } from '@/features/users/UsersPage';
+import { LocationsPage } from '@/features/locations/LocationsPage';
+import { AnalyticsPage } from '@/features/analytics/AnalyticsPage';
+import { VerificationFraudPage } from '@/features/verification-fraud/VerificationFraudPage';
 
 // Nav item id -> real page component, filled in phase by phase. Anything
 // not listed here still falls back to ModulePlaceholder (see Phase 0).
@@ -19,6 +23,10 @@ const MODULE_PAGES: Partial<Record<string, ComponentType>> = {
   'pending-listings': PendingListingsPage,
   'seller-applications': SellerApplicationsPage,
   messages: MessagesPage,
+  users: UsersPage,
+  locations: LocationsPage,
+  analytics: AnalyticsPage,
+  'verification-fraud': VerificationFraudPage,
 };
 
 const moduleRoutes: RouteObject[] = enabledNavItems.map((item) => {
