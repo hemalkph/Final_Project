@@ -19,6 +19,8 @@ import {
   ShieldCheck,
   ScrollText,
   Settings as SettingsIcon,
+  ListChecks,
+  UserCheck,
 } from 'lucide-react';
 import type { NavGroup } from '@/types/nav';
 
@@ -43,6 +45,7 @@ export const navGroups: NavGroup[] = [
     label: 'Marketplace',
     items: [
       { id: 'properties', label: 'Properties', path: '/properties', icon: Building2, status: 'functional' },
+      { id: 'pending-listings', label: 'Pending Listings', path: '/pending-listings', icon: ListChecks, status: 'functional' },
       { id: 'users', label: 'Users', path: '/users', icon: UsersRound, status: 'partial' },
       { id: 'agents', label: 'Agents & Agencies', path: '/agents', icon: Handshake, status: 'functional' },
       { id: 'leads-crm', label: 'Leads & CRM', path: '/leads-crm', icon: Target, status: 'absent' },
@@ -70,6 +73,7 @@ export const navGroups: NavGroup[] = [
     label: 'Trust & Operations',
     items: [
       { id: 'reviews-moderation', label: 'Reviews & Moderation', path: '/reviews-moderation', icon: Star, status: 'absent' },
+      { id: 'seller-applications', label: 'Seller Applications', path: '/seller-applications', icon: UserCheck, status: 'functional' },
       { id: 'verification-fraud', label: 'Verification & Fraud', path: '/verification-fraud', icon: ShieldAlert, status: 'partial' },
       { id: 'support', label: 'Support', path: '/support', icon: LifeBuoy, status: 'absent' },
     ],
