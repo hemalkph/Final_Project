@@ -5,7 +5,24 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
     // React plugin only transforms .jsx/.tsx files — every existing vanilla
     // HTML/JS page is untouched by this.
-    plugins: [react()],
+    plugins: [
+        react(),
+        {
+            // Dev-only mirror of server.js's SPA-fallback route: a hard
+            // refresh on an admin sub-path (e.g. /admin-dashboard.html/agents)
+            // would otherwise 404 in `vite dev`, since only the production
+            // Express server has the rewrite. Never affects the built output.
+            name: 'admin-spa-fallback',
+            configureServer(server) {
+                server.middlewares.use((req, res, next) => {
+                    if (req.url?.startsWith('/admin-dashboard.html/')) {
+                        req.url = '/admin-dashboard.html';
+                    }
+                    next();
+                });
+            },
+        },
+    ],
     // sockjs-client (used by the admin Messages module's STOMP client)
     // references the Node global `global` at module scope, which doesn't
     // exist in a browser ESM bundle — this is the standard, well-known fix.
@@ -33,10 +50,9 @@ export default defineConfig({
                 admin_dashboard: resolve(__dirname, 'admin-dashboard.html'),
                 user_dashboard: resolve(__dirname, 'user-dashboard.html'),
                 contact: resolve(__dirname, 'contact.html'),
-                // Temporary Phase-0 scratch entry for the new React admin app.
-                // Deliberately NOT admin-dashboard.html — the old dashboard stays
-                // untouched and reachable until its replacement is verified
-                // (see Phase 1 of the migration plan).
+                // Phase-0 scratch entry for the React admin app, kept as a
+                // safety net after the Phase 6 cutover (admin-dashboard.html
+                // now serves this same app for real) until Phase 7 removes it.
                 admin_react_preview: resolve(__dirname, 'admin-react-preview.html'),
             },
         },
