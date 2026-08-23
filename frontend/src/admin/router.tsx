@@ -7,10 +7,12 @@ import { PropertiesPage } from '@/features/properties/PropertiesPage';
 import { AgentsPage } from '@/features/agents/AgentsPage';
 import { PendingListingsPage } from '@/features/pending-listings/PendingListingsPage';
 import { SellerApplicationsPage } from '@/features/seller-applications/SellerApplicationsPage';
+import { DashboardPage } from '@/features/dashboard/DashboardPage';
 
 // Nav item id -> real page component, filled in phase by phase. Anything
 // not listed here still falls back to ModulePlaceholder (see Phase 0).
 const MODULE_PAGES: Partial<Record<string, ComponentType>> = {
+  dashboard: DashboardPage,
   properties: PropertiesPage,
   agents: AgentsPage,
   'pending-listings': PendingListingsPage,
