@@ -45,13 +45,9 @@ export const router = createBrowserRouter(
     },
   ],
   {
-    // Phase-0 scratch preview is served from a single static HTML file
-    // (not a clean SPA root), so the router needs this as its base path.
-    // The real cutover (Phase 1) mounts at admin-dashboard.html the same
-    // way and will carry the same basename requirement. Deep-link/hard
-    // refresh on a sub-path (e.g. /admin-react-preview.html/properties)
-    // isn't wired up yet for this scratch entry — client-side nav (clicking
-    // sidebar items) works fine; that's what Phase 0 verification checks.
-    basename: '/admin-react-preview.html',
+    // Mounted at admin-dashboard.html (not a clean SPA root), so the
+    // router needs this as its base path. server.js has a matching
+    // SPA-fallback route for sub-paths under this basename (Phase 6).
+    basename: '/admin-dashboard.html',
   },
 );
