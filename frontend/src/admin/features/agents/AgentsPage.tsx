@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, Plus, Search } from 'lucide-react';
-import { isAxiosError } from 'axios';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Plus, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,8 +10,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Skeleton } from '@/components/ui/skeleton';
 import { DataTable } from '@/components/data-table';
+import { PageHeader } from '@/components/layout/page-header';
+import { FilterBar } from '@/components/filter-bar';
+import { TableSkeleton } from '@/components/table-skeleton';
+import { ErrorState } from '@/components/error-state';
 import { queryKeys } from '@/lib/queryKeys';
 import { AGENT_STATUSES, SPECIALIZATIONS, type Agent, type AgentStatus } from '@/types/agent';
 import { agentsApi } from './api';
@@ -81,21 +82,19 @@ export function AgentsPage() {
     onDelete: setDeleteAgentTarget,
   });
 
-  const isForbidden = isAxiosError(agentsQuery.error) && agentsQuery.error.response?.status === 403;
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-foreground">Agents</h1>
-          <p className="text-sm text-muted-foreground">Manage real estate agent profiles.</p>
-        </div>
-        <Button onClick={() => setFormState({ mode: 'add' })}>
-          <Plus className="mr-1.5 size-4" /> Add Agent
-        </Button>
-      </div>
+      <PageHeader
+        title="Agents"
+        description="Manage real estate agent profiles."
+        actions={
+          <Button onClick={() => setFormState({ mode: 'add' })}>
+            <Plus className="mr-1.5 size-4" /> Add Agent
+          </Button>
+        }
+      />
 
-      <div className="flex flex-wrap gap-3">
+      <FilterBar>
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
           <Input
@@ -106,7 +105,7 @@ export function AgentsPage() {
           />
         </div>
         <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as AgentStatus | typeof ALL_VALUE)}>
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-40">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -132,7 +131,7 @@ export function AgentsPage() {
           </SelectContent>
         </Select>
         <Select value={locationFilter} onValueChange={setLocationFilter}>
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-48">
             <SelectValue placeholder="Location" />
           </SelectTrigger>
           <SelectContent>
@@ -144,29 +143,12 @@ export function AgentsPage() {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </FilterBar>
 
-      {agentsQuery.isLoading && (
-        <div className="space-y-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </div>
-      )}
+      {agentsQuery.isLoading && <TableSkeleton />}
 
       {agentsQuery.isError && (
-        <Alert variant="destructive">
-          <AlertCircle className="size-4" />
-          <AlertTitle>{isForbidden ? 'Permission denied' : 'Failed to load agents'}</AlertTitle>
-          <AlertDescription>
-            {isForbidden
-              ? "Your account doesn't have permission to view this. Log in as an admin and try again."
-              : 'Something went wrong reaching the server.'}
-            <Button variant="link" className="h-auto p-0 pl-2" onClick={() => agentsQuery.refetch()}>
-              Retry
-            </Button>
-          </AlertDescription>
-        </Alert>
+        <ErrorState error={agentsQuery.error} onRetry={() => agentsQuery.refetch()} resourceName="agents" />
       )}
 
       {agentsQuery.isSuccess && (

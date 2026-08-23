@@ -1,5 +1,6 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { Eye, MoreHorizontal, Pencil, Star, Trash2 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,10 +11,19 @@ import {
 } from '@/components/ui/dropdown-menu';
 import type { Agent, AgentStatus } from '@/types/agent';
 
-const STATUS_VARIANT: Record<AgentStatus, 'default' | 'secondary'> = {
+export const AGENT_STATUS_VARIANT: Record<AgentStatus, 'default' | 'secondary'> = {
   ACTIVE: 'default',
   INACTIVE: 'secondary',
 };
+
+export function initials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('');
+}
 
 interface GetColumnsArgs {
   onView: (agent: Agent) => void;
@@ -28,11 +38,10 @@ export function getAgentColumns({ onView, onEdit, onDelete }: GetColumnsArgs): C
       header: 'Agent',
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="size-9 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
-            {row.original.profileImageUrl && (
-              <img src={row.original.profileImageUrl} alt="" className="size-full object-cover" />
-            )}
-          </div>
+          <Avatar className="size-9 border border-border">
+            <AvatarImage src={row.original.profileImageUrl ?? undefined} alt="" />
+            <AvatarFallback className="text-xs">{initials(row.original.name)}</AvatarFallback>
+          </Avatar>
           <div>
             <div className="font-medium">{row.original.name}</div>
             <div className="text-xs text-muted-foreground">{row.original.email || '—'}</div>
@@ -75,7 +84,7 @@ export function getAgentColumns({ onView, onEdit, onDelete }: GetColumnsArgs): C
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => (
-        <Badge variant={STATUS_VARIANT[row.original.status]}>{row.original.status}</Badge>
+        <Badge variant={AGENT_STATUS_VARIANT[row.original.status]}>{row.original.status}</Badge>
       ),
     },
     {

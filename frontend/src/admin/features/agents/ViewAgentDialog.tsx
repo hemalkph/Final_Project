@@ -1,4 +1,5 @@
 import { Star } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -7,6 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import type { Agent } from '@/types/agent';
+import { AGENT_STATUS_VARIANT, initials } from './columns';
 
 function formatDate(iso: string | null): string {
   if (!iso) return '—';
@@ -31,11 +33,10 @@ export function ViewAgentDialog({ open, onOpenChange, agent }: ViewAgentDialogPr
 
         <div className="space-y-4">
           <div className="flex items-center gap-4">
-            <div className="size-16 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
-              {agent.profileImageUrl && (
-                <img src={agent.profileImageUrl} alt="" className="size-full object-cover" />
-              )}
-            </div>
+            <Avatar className="size-16 border border-border">
+              <AvatarImage src={agent.profileImageUrl ?? undefined} alt="" />
+              <AvatarFallback>{initials(agent.name)}</AvatarFallback>
+            </Avatar>
             <div>
               <p className="font-medium">{agent.title || 'Agent'}</p>
               <p className="text-sm text-muted-foreground">{agent.email}</p>
@@ -44,7 +45,7 @@ export function ViewAgentDialog({ open, onOpenChange, agent }: ViewAgentDialogPr
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Badge variant={agent.status === 'ACTIVE' ? 'default' : 'secondary'}>{agent.status}</Badge>
+            <Badge variant={AGENT_STATUS_VARIANT[agent.status]}>{agent.status}</Badge>
             {agent.specialization && <Badge variant="outline">{agent.specialization}</Badge>}
             {agent.location && <Badge variant="outline">{agent.location}</Badge>}
           </div>
